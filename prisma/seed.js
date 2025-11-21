@@ -14,7 +14,7 @@ async function main() {
     // Test participant account with profile
     const user1 = await prisma.user.create({
       data: {
-        email: "test@example.com",
+        email: "duncan@highlands.com",
         passwordHash: await bcrypt.hash("password123", 10),
         role: "participant",
         emailVerified: true
@@ -70,7 +70,7 @@ async function main() {
     });
     
     console.log("✅ Test users created!");
-    console.log("   - test@example.com / password123 (Duncan MacDougall)");
+    console.log("   - duncan@highlands.com / password123 (Duncan MacDougall)");
     console.log("   - john@example.com / password123 (John Campbell)");
     console.log("   - Test Team: Highland Warriors (Invite Code: TEST1234)");
   }

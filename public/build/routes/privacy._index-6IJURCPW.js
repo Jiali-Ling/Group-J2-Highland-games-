@@ -53,7 +53,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\privacy._index.jsx"
   );
-  import.meta.hot.lastModified = "1763732592859.5962";
+  import.meta.hot.lastModified = "1763732613703.8823";
 }
 function Privacy() {
   _s();
@@ -659,4 +659,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   Privacy as default
 };
-//# sourceMappingURL=/build/routes/privacy._index-ZKAMXS4X.js.map
+//# sourceMappingURL=/build/routes/privacy._index-6IJURCPW.js.map

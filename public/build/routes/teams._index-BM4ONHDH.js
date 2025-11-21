@@ -52,7 +52,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\teams._index.jsx"
   );
-  import.meta.hot.lastModified = "1763732511527.5112";
+  import.meta.hot.lastModified = "1763732613703.8823";
 }
 function Teams() {
   _s();
@@ -685,4 +685,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   Teams as default
 };
-//# sourceMappingURL=/build/routes/teams._index-YO6L2W4G.js.map
+//# sourceMappingURL=/build/routes/teams._index-BM4ONHDH.js.map

@@ -49,7 +49,7 @@ if (import.meta) {
     //@ts-expect-error
     "app\\routes\\profile._index.jsx"
   );
-  import.meta.hot.lastModified = "1763732551588.1775";
+  import.meta.hot.lastModified = "1763732613703.8823";
 }
 function Profile() {
   _s();
@@ -440,4 +440,4 @@ window.$RefreshSig$ = prevRefreshSig;
 export {
   Profile as default
 };
-//# sourceMappingURL=/build/routes/profile._index-J4DEMMDY.js.map
+//# sourceMappingURL=/build/routes/profile._index-TA35KTVC.js.map
