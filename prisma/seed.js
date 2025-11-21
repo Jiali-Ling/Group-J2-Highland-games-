@@ -1,17 +1,13 @@
-// prisma/seed.js
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  console.log("Seeding database...");
   
-  // Create test users if they don't exist
   const existingUser = await prisma.user.findFirst();
   if (!existingUser) {
-    console.log("Creating test users...");
-    
-    // Test participant account with profile
     const user1 = await prisma.user.create({
       data: {
         email: "duncan@highlands.com",
@@ -32,7 +28,6 @@ async function main() {
       }
     });
     
-    // Another test participant
     const user2 = await prisma.user.create({
       data: {
         email: "john@example.com",
@@ -51,7 +46,6 @@ async function main() {
       }
     });
     
-    // Create a test team
     const team = await prisma.team.create({
       data: {
         name: "Highland Warriors",
@@ -61,7 +55,6 @@ async function main() {
       }
     });
     
-    // Add team members
     await prisma.teamMember.createMany({
       data: [
         { teamId: team.id, userId: user1.id, role: "owner" },
@@ -69,37 +62,33 @@ async function main() {
       ]
     });
     
-    console.log("✅ Test users created!");
-    console.log("   - duncan@highlands.com / password123 (Duncan MacDougall)");
-    console.log("   - john@example.com / password123 (John Campbell)");
-    console.log("   - Test Team: Highland Warriors (Invite Code: TEST1234)");
+    console.log("Users created: duncan@highlands.com, john@example.com (password123)");
   }
 
   const existing = await prisma.event.findFirst();
   if (existing) {
-    console.log("✅ Database already seeded!");
+    console.log("Database already seeded");
     return;
   }
 
-  // Create events
   const event1 = await prisma.event.create({
     data: {
       name: "Paisley Highland Games 2025",
-      description: "Traditional Highland athletics featuring caber toss, stone put, hammer throw, and Highland dancing. Join us for a celebration of Scottish culture and athletic prowess!",
+      description: "Traditional Highland athletics featuring caber toss, stone put, hammer throw, and Highland dancing.",
       date: new Date("2025-08-15T10:00:00Z"),
       location: "Paisley, Scotland",
       registrationOpen: true,
       registrationStart: new Date("2025-06-01"),
       registrationEnd: new Date("2025-08-10"),
       maxParticipants: 200,
-      rules: "All competitors must be 18+ and sign liability waiver. Safety equipment provided."
+      rules: "All competitors must be 18+ and sign liability waiver."
     }
   });
 
   const event2 = await prisma.event.create({
     data: {
       name: "Stirling Highland Festival 2025",
-      description: "Annual Highland Festival with traditional games, pipe bands, and cultural events.",
+      description: "Annual Highland Festival with traditional games and cultural events.",
       date: new Date("2025-09-20T09:00:00Z"),
       location: "Stirling, Scotland",
       registrationOpen: true,
@@ -107,7 +96,6 @@ async function main() {
     }
   });
 
-  // Create historical winners
   await prisma.winner.createMany({
     data: [
       { eventId: event1.id, category: "Caber Toss", athlete: "Hamish MacLeod", position: 1, year: 2024 },
@@ -119,28 +107,24 @@ async function main() {
     ]
   });
 
-  // Create announcements
   await prisma.announcement.createMany({
     data: [
       {
         eventId: event1.id,
-        title: "Registration Now Open!",
-        content: "Registration for Paisley Highland Games 2025 is now open. Sign up early to secure your spot!",
+        title: "Registration Now Open",
+        content: "Registration for Paisley Highland Games 2025 is now open.",
         type: "general"
       },
       {
         eventId: event1.id,
-        title: "New Safety Protocols",
-        content: "Please review the updated safety guidelines before the event. All participants must attend the safety briefing.",
+        title: "Safety Protocols",
+        content: "Please review the safety guidelines before the event.",
         type: "important"
       }
     ]
   });
   
-  console.log("✅ Database seeded successfully!");
-  console.log("   - 2 Events created");
-  console.log("   - 6 Historical winners added");
-  console.log("   - 2 Announcements published");
+  console.log("Database seeded successfully");
 }
 
 main()
