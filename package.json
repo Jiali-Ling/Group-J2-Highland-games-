@@ -1,0 +1,32 @@
+{
+  "name": "highland-games-starter",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "remix dev",
+    "build": "remix build",
+    "start": "remix-serve ./build/index.js",
+    "setup": "prisma migrate dev -n init && prisma db seed",
+    "seed": "prisma db seed"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "@remix-run/node": "^2.9.2",
+    "@remix-run/react": "^2.9.2",
+    "@remix-run/serve": "^2.9.2",
+    "bcryptjs": "^2.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.9.2",
+    "prisma": "^5.20.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}

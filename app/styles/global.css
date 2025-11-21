@@ -1,0 +1,133 @@
+/* Global styles for Paisley Highland Games */
+:root{
+  --bg: #0b0d12;
+  --panel: #11141a;
+  --text: #e6eaf2;
+  --muted: #b8c1d6;
+  --brand: #6bb7ff;
+  --brand-strong: #2f7dd0;
+  --accent: linear-gradient(135deg, #6bb7ff 0%, #9f7bff 50%, #ff6fd8 100%);
+  --radius: 12px;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  /* Scottish Highland Games authentic backgrounds from real events */
+  /* Main hero - Caber toss athlete in action at Highland Games */
+  --hero-image: url('https://images.unsplash.com/photo-1526976668912-1a811878dd37?auto=format&fit=crop&w=1900&q=80');
+  
+  /* Events page - Highland Games athletes competing with Scottish landscape */
+  --events-bg: url('https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?auto=format&fit=crop&w=1900&q=80');
+  
+  /* Registration page - Highland Games field with Scottish mountains backdrop */
+  --register-bg: url('https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1900&q=80');
+  
+  /* Winners page - Champion podium with Highland Games medals and trophies */
+  --winners-bg: url('https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1900&q=80');
+  
+  /* Admin login - Traditional Scottish Highland Games venue with spectators */
+  --highland-1: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1900&q=80');
+  
+  /* Admin dashboard - Highland Games competitors preparing with Scottish flags */
+  --highland-2: url('https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=1900&q=80');
+  /* Tuning knobs for hero */
+  --hero-height: 72vh;
+  --hero-height-sm: 56vh;
+  --hero-overlay-top: .55;
+  --hero-overlay-bottom: .82;
+}
+
+*{ box-sizing: border-box; }
+html, body { height: 100%; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(111,118,255,0.18), transparent),
+              radial-gradient(1000px 600px at 100% 0%, rgba(107,183,255,0.18), transparent),
+              var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container{ max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+ 
+/* Header */
+.site-header{ position: sticky; top:0; z-index: 10; background: rgba(11,13,18,0.7); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.header-inner{ display:flex; align-items:center; justify-content: space-between; height:64px; }
+.brand{ color: var(--text); font-weight: 700; text-decoration: none; letter-spacing: .3px; }
+.nav{ display:flex; gap:16px; align-items: center; }
+.nav-link{ color: var(--muted); text-decoration: none; padding: 8px 10px; border-radius: 8px; transition: all 0.2s ease; }
+.nav-link:hover{ color: var(--text); background: rgba(255,255,255,0.06); }
+.nav-link-primary{ 
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+  font-weight: 600;
+}
+.nav-link-primary:hover{
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* User menu in header */
+.user-menu{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-email{
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.logout-btn{
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+}
+.logout-btn:hover{
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.5);
+  color: #fca5a5;
+}
+
+/* Footer */
+.site-footer{ margin-top: 48px; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
+.footer-inner{ padding: 22px 0; color: var(--muted); font-size: 14px; }
+
+/* Buttons */
+.btn{ display:inline-flex; align-items:center; gap:8px; text-decoration:none; color: var(--text); padding: 12px 16px; border-radius: 10px; border:1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); transition: all .15s ease; }
+.btn:hover{ background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+.btn-primary{ border: none; background: var(--accent); color: #0b0d12; font-weight: 600; box-shadow: var(--shadow); }
+.btn-primary:hover{ filter: brightness(1.05); }
+
+/* Cards/grid utilities */
+.grid{ display:grid; gap:16px; }
+.grid-3{ grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card{ background: var(--panel); border:1px solid rgba(255,255,255,0.08); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+.card h3{ margin: 0 0 8px; font-size: 18px; }
+.card p{ margin:0; color: var(--muted); font-size: 14px; }
+
+/* Typography */
+h1,h2,h3{ line-height:1.2; }
+
+/* Allow routes with their own full-bleed sections */
+main{ padding: 24px 0; }
+
+/* Scroll down indicator */
+.scroll-down{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+  width: 40px; height: 40px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+  transition: transform .15s ease, background .15s ease;
+}
+.scroll-down:hover{ background: rgba(255,255,255,0.12); transform: translateX(-50%) translateY(-2px); }
+.scroll-down::after{ content: "\2193"; /* ↓ */ font-size: 18px; line-height: 1; }

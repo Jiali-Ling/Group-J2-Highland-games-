@@ -1,0 +1,146 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  Int              @id @default(autoincrement())
+  email               String           @unique
+  passwordHash        String
+  role                String           @default("participant")
+  emailVerified       Boolean          @default(false)
+  verificationToken   String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  profile             UserProfile?
+  registrations       Registration[]
+  teamMemberships     TeamMember[]
+  ownedTeams          Team[]           @relation("TeamOwner")
+  consentLogs         ConsentLog[]
+  dataRequests        DataRequest[]
+}
+
+model UserProfile {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  fullName        String
+  dateOfBirth     DateTime?
+  phone           String?
+  address         String?
+  emergencyContact String?
+  medicalInfo     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Team {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  inviteCode  String       @unique
+  ownerId     Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  owner       User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members     TeamMember[]
+  registrations Registration[]
+}
+
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  userId    Int
+  role      String   @default("member")
+  joinedAt  DateTime @default(now())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([teamId, userId])
+}
+
+model Event {
+  id                Int            @id @default(autoincrement())
+  name              String
+  description       String
+  date              DateTime
+  location          String
+  registrationOpen  Boolean        @default(true)
+  registrationStart DateTime?
+  registrationEnd   DateTime?
+  maxParticipants   Int?
+  ageRestriction    String?
+  rules             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  registrations     Registration[]
+  winners           Winner[]
+  announcements     Announcement[]
+}
+
+model Registration {
+  id              Int       @id @default(autoincrement())
+  eventId         Int
+  userId          Int
+  teamId          Int?
+  name            String
+  email           String
+  category        String
+  status          String    @default("pending")
+  rejectionReason String?
+  submittedAt     DateTime  @default(now())
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  event           Event     @relation(fields: [eventId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
+  team            Team?     @relation(fields: [teamId], references: [id])
+}
+
+model Winner {
+  id       Int    @id @default(autoincrement())
+  eventId  Int
+  category String
+  athlete  String
+  position Int
+  year     Int
+  event    Event  @relation(fields: [eventId], references: [id])
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
+  eventId     Int?
+  title       String
+  content     String
+  type        String   @default("general")
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  event       Event?   @relation(fields: [eventId], references: [id])
+}
+
+model ConsentLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  consentType String
+  agreed      Boolean
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DataRequest {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  requestType String
+  status      String   @default("pending")
+  reason      String?
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,34 @@
+﻿/* Auth Centered v4 */
+body { background: transparent !important; color: #2d3748 !important; }
+.auth-container.login-mode { min-height: 100vh; display: grid !important; grid-template-columns: 1fr 1fr !important; background: #ffffff !important; position: relative; }
+.auth-container.login-mode::before { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(135deg, #f0c9dc 0%, #d4a5c3 100%); z-index: 0; }
+.login-mode .auth-card-combined { grid-column: 2; background: #ffffff; padding: 4rem; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; z-index: 1; }
+.login-mode .auth-card-combined h1 { color: #2d3748; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center; }
+.login-mode .auth-subtitle { color: #718096; font-size: 1rem; margin-bottom: 2rem; text-align: center; }
+.login-mode .auth-form { width: 100%; max-width: 400px; }
+.login-mode .form-group { margin-bottom: 1rem; }
+.login-mode .form-group label { display: block; color: #2d3748; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center; }
+.login-mode .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; background: #f7fafc; color: #2d3748; font-size: 1rem; text-align: center; }
+.login-mode .form-group input:focus { outline: none; border-color: #ea4c89; background: #ffffff; }
+.login-mode .auth-button { width: 100%; padding: 0.875rem; margin-top: 0.5rem; background: #ea4c89; color: white; font-size: 1rem; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
+.login-mode .auth-button:hover { background: #e62872; }
+.auth-switch { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; text-align: center; }
+.auth-switch p { color: #718096; font-size: 0.875rem; margin: 0.5rem 0; }
+.switch-link { background: none; border: none; color: #ea4c89; font-weight: 600; cursor: pointer; padding: 0; }
+.form-hint { color: #a0aec0; font-size: 0.875rem; }
+.error-message { color: #e53e3e; font-size: 0.875rem; margin-top: 0.25rem; text-align: center; }
+.error-banner { background: #fff5f5; border: 1px solid #feb2b2; border-radius: 6px; padding: 0.75rem; color: #c53030; margin-bottom: 1rem; }
+.auth-container.register-mode { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; background: #ffffff; position: relative; }
+.auth-container.register-mode::before { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(135deg, #f0c9dc 0%, #d4a5c3 100%); z-index: 0; }
+.register-mode .auth-card-combined { grid-column: 2; background: #ffffff; padding: 4rem; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; z-index: 1; }
+.register-mode h1 { color: #2d3748; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center; }
+.register-mode .auth-subtitle { color: #718096; font-size: 1rem; margin-bottom: 2rem; text-align: center; }
+.register-mode .auth-form { width: 100%; max-width: 400px; }
+.register-mode .form-group { margin-bottom: 1rem; }
+.register-mode .form-group label { display: block; color: #2d3748; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; text-align: center; }
+.register-mode .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; background: #f7fafc; color: #2d3748; font-size: 1rem; text-align: center; }
+.register-mode .form-group input:focus { outline: none; border-color: #ea4c89; background: #ffffff; }
+.register-mode .auth-button { width: 100%; padding: 0.875rem; margin-top: 0.5rem; background: #ea4c89; color: white; font-size: 1rem; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
+.register-mode .auth-button:hover { background: #e62872; }
+.auth-logo { width: 80px; height: 80px; }
+@media (max-width: 768px) { .auth-container.login-mode, .auth-container.register-mode { grid-template-columns: 1fr; } .auth-container.login-mode::before, .auth-container.register-mode::before { display: none; } .login-mode .auth-card-combined, .register-mode .auth-card-combined { grid-column: 1; } }
