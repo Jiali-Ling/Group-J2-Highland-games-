@@ -13,7 +13,6 @@ export async function loader({ request }) {
   const userEmail = session.get("userEmail");
   if (!isAdmin) return json({ isAdmin: false });
   
-  // Get registrations with user and event details
   const regs = await prisma.registration.findMany({
     include: {
       event: true,
@@ -26,12 +25,10 @@ export async function loader({ request }) {
   
   const events = await prisma.event.findMany({ orderBy: { date: "asc" } });
   
-  // Get pending count
   const pendingCount = await prisma.registration.count({
     where: { status: "pending" }
   });
   
-  // Get data requests
   const dataRequests = await prisma.dataRequest.findMany({
     where: { status: "pending" },
     include: { user: { select: { email: true } } },
@@ -81,7 +78,6 @@ export async function action({ request }) {
       }
     });
     
-    // Send notification email
     await sendApprovalNotification(
       registration.email,
       registration.event.name,
@@ -200,7 +196,7 @@ export default function Admin() {
                     <span style={{ fontSize: "0.85rem", color: "#666" }}>Team: {r.team.name}</span>
                   )}
                   <span style={{ fontSize: "0.85rem", color: "#666" }}>
-                    {new Date(r.submittedAt).toLocaleString()}
+                    {new Date(r.submittedAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
                 <Form method="post" className="reg-actions" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -245,7 +241,7 @@ export default function Admin() {
                     )}
                   </div>
                   <span style={{ fontSize: "0.85rem", color: "#666" }}>
-                    {new Date(req.createdAt).toLocaleString()}
+                    {new Date(req.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
                 <Form method="post" className="reg-actions">
@@ -290,7 +286,7 @@ export default function Admin() {
           {data.events.map(e => (
             <div key={e.id} className="event-item">
               <strong>{e.name}</strong>
-              <span>{new Date(e.date).toDateString()} @ {e.location}</span>
+              <span>{new Date(e.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })} @ {e.location}</span>
             </div>
           ))}
         </div>

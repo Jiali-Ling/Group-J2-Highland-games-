@@ -1,7 +1,9 @@
 node_modules
 .build
 /build
+public/build
 /.cache
 .env
 prisma/dev.db
 .DS_Store
+*.log

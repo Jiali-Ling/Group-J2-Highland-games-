@@ -3,46 +3,72 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useNavigation, Link } from "@remix-run/react";
 import { requireUser, getUser } from "~/utils/session.server";
 import registerStyles from "../styles/register.css?url";
+import { useEffect } from "react";
 
 export const links = () => [{ rel: "stylesheet", href: registerStyles }];
 
+function formatEventDate(dateString) {
+  const date = new Date(dateString);
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'UTC'
+  };
+  return date.toLocaleString('en-US', options);
+}
+
 export async function loader({ params, request }) {
-  // Check if user is logged in
-  const user = await getUser(request);
-  if (!user) {
-    // Redirect to login with return URL
-    const url = new URL(request.url);
-    return redirect(`/auth?mode=login&returnTo=${encodeURIComponent(url.pathname)}`);
-  }
-  
-  const event = await prisma.event.findUnique({ where: { id: Number(params.id) } });
-  if (!event) throw new Response("Not Found", { status: 404 });
-  
-  // Get user's profile
-  const userProfile = await prisma.userProfile.findUnique({
-    where: { userId: user.id }
-  });
-  
-  // Get user's teams
-  const userTeams = await prisma.teamMember.findMany({
-    where: { userId: user.id },
-    include: {
-      team: {
-        select: { id: true, name: true }
-      }
+  try {
+    const user = await getUser(request);
+    if (!user) {
+      const url = new URL(request.url);
+      return redirect(`/auth?mode=login&returnTo=${encodeURIComponent(url.pathname)}`);
     }
-  });
-  
-  return json({ event, user, userProfile, userTeams });
+    
+    const eventId = Number(params.id);
+    if (isNaN(eventId)) {
+      throw new Response("Invalid event ID", { status: 400 });
+    }
+    
+    const event = await prisma.event.findUnique({ where: { id: eventId } });
+    if (!event) {
+      throw new Response("Event not found", { status: 404 });
+    }
+    
+    const userProfile = await prisma.userProfile.findUnique({
+      where: { userId: user.id }
+    });
+    
+    const userTeams = await prisma.teamMember.findMany({
+      where: { userId: user.id },
+      include: {
+        team: {
+          select: { id: true, name: true }
+        }
+      }
+    });
+    
+    return json({ event, user, userProfile, userTeams });
+  } catch (error) {
+    console.error("Register page loader error:", error);
+    if (error instanceof Response) {
+      throw error;
+    }
+    throw new Response("Failed to load registration page", { status: 500 });
+  }
 }
 
 export async function action({ request, params }) {
-  // Require user to be logged in
   const userId = await requireUser(request);
   const user = await getUser(request);
   
+  let form;
   try {
-    const form = await request.formData();
+    form = await request.formData();
     const name = form.get("name")?.toString().trim();
     const category = form.get("category")?.toString().trim();
     const teamId = form.get("teamId") ? Number(form.get("teamId")) : null;
@@ -50,7 +76,6 @@ export async function action({ request, params }) {
     const consentPrivacy = form.get("consentPrivacy") === "on";
     const consentRisk = form.get("consentRisk") === "on";
 
-    console.log("Registration attempt:", { name, email: user.email, category, teamId, agree });
 
     const errors = {};
     if (!name || name.length < 2) errors.name = "Name must be at least 2 characters";
@@ -75,7 +100,6 @@ export async function action({ request, params }) {
       }
     });
 
-    // Log consent
     await prisma.consentLog.create({
       data: {
         userId: userId,
@@ -94,30 +118,85 @@ export async function action({ request, params }) {
       }
     });
 
-    console.log("Registration created:", registration);
     return redirect(`/events/${params.id}?registered=1`);
   } catch (error) {
     console.error("Registration error:", error);
     return json({ 
       error: "Failed to submit registration. Please try again.",
-      values: { 
-        name: form?.get("name")?.toString().trim(), 
-        category: form?.get("category")?.toString().trim(),
-        teamId: form?.get("teamId") ? Number(form?.get("teamId")) : null,
-        agree: form?.get("agree") === "on"
-      }
+      values: form ? { 
+        name: form.get("name")?.toString().trim() || "", 
+        category: form.get("category")?.toString().trim() || "",
+        teamId: form.get("teamId") ? Number(form.get("teamId")) : null,
+        agree: form.get("agree") === "on"
+      } : {}
     }, { status: 500 });
   }
 }
 
+export function ErrorBoundary() {
+  return (
+    <main className="container register-page">
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <h2>Something went wrong</h2>
+        <p>There was an error loading the registration page. Please try again.</p>
+        <Link to="/events" style={{ color: "#007c89", textDecoration: "underline" }}>
+          Back to Events
+        </Link>
+      </div>
+    </main>
+  );
+}
+
 export default function Register() {
-  const { event, user, userProfile, userTeams } = useLoaderData();
+  const loaderData = useLoaderData();
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const isLoading = navigation.state === "loading";
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    const main = document.querySelector('.register-page');
+    if (main) {
+      main.style.display = 'block';
+      main.style.visibility = 'visible';
+      main.style.opacity = '1';
+    }
+    
+    const eventDetailPage = document.querySelector('.event-detail-page');
+    if (eventDetailPage) {
+      eventDetailPage.style.display = 'none';
+    }
+  }, []);
+
+  if (!loaderData || isLoading) {
+    return (
+      <main className="container register-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p style={{ fontSize: '18px', color: '#1e3a8a' }}>Loading registration page...</p>
+        </div>
+      </main>
+    );
+  }
+
+  const { event, user, userProfile, userTeams } = loaderData;
+
+  if (!event || !user) {
+    return (
+      <main className="container register-page">
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Error: Missing event or user data</p>
+          <Link to="/events" style={{ color: "#007c89", textDecoration: "underline" }}>
+            Back to Events
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main className="container register-page">
+    <main className="container register-page" style={{ display: 'block', visibility: 'visible', opacity: 1 }}>
       <div className="register-header">
         <h1>Register for Competition</h1>
         <p>Join us for an authentic Highland Games experience</p>
@@ -125,14 +204,9 @@ export default function Register() {
 
       <div className="event-info">
         <h3>{event.name}</h3>
-        <p>{new Date(event.date).toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })} • {event.location}</p>
+        <p suppressHydrationWarning>
+          {formatEventDate(event.date)} • {event.location}
+        </p>
         <p className="user-email-display">Registering as: <strong>{user.email}</strong></p>
       </div>
 
@@ -166,9 +240,6 @@ export default function Register() {
       <Form 
         method="post" 
         className="register-form"
-        onSubmit={(e) => {
-          console.log("Form submitting...");
-        }}
       >
         <div className="form-field">
           <label htmlFor="name">Full Name *</label>
@@ -260,7 +331,6 @@ export default function Register() {
               type="checkbox" 
               name="consentPrivacy" 
               required
-              defaultChecked={actionData?.values?.agree}
               disabled={isSubmitting}
             />
             <label htmlFor="consentPrivacy">
@@ -277,7 +347,6 @@ export default function Register() {
               type="checkbox" 
               name="consentRisk" 
               required
-              defaultChecked={actionData?.values?.agree}
               disabled={isSubmitting}
             />
             <label htmlFor="consentRisk">
@@ -294,7 +363,6 @@ export default function Register() {
               type="checkbox" 
               name="agree" 
               required
-              defaultChecked={actionData?.values?.agree}
               disabled={isSubmitting}
             />
             <label htmlFor="agree">

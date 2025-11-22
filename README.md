@@ -35,9 +35,12 @@ Open http://localhost:3000
 
 ### Test Accounts
 
-**User:** duncan@highlands.com / password123  
-**Admin:** admin@example.com / admin123  
-**Team Code:** TEST1234
+User (Owner): B01812585@student.uws.ac.uk / password123  
+Team Members: jiali.ling@example.com, yuhan.shi@example.com / password123  
+Admin: admin@example.com / admin123  
+Team Code: TEST1234
+
+Note: Use the student account (B01812585@student.uws.ac.uk) as the primary test account for registration and team management.
 
 ## Database Reset
 
@@ -75,6 +78,14 @@ public/              - Static files
 - `npm run build` - Build for production  
 - `npm start` - Start production server
 - `npm run setup` - Initialize database
+
+## Customization
+
+Change Colors:  
+Edit `app/styles/global.css`
+
+Change Text Content:  
+Edit `app/config/site-content.js`
 
 ## GitHub
 

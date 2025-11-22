@@ -1,23 +1,18 @@
-/* Home page (index route) styles */
 .hero{
-  /* Make the image cover more vertical space */
   min-height: var(--hero-height);
   padding: 120px 0 72px;
   display: flex;
-  align-items: flex-end; /* Push the copy a bit lower */
-  /* Photo background with a subtle dark overlay for readability */
-  background-image:
-    linear-gradient(180deg, rgba(11,13,18,var(--hero-overlay-top)) 0%, rgba(11,13,18,var(--hero-overlay-bottom)) 80%),
-    var(--hero-image);
+  align-items: flex-end;
+  background-image: var(--hero-image);
   background-size: cover;
-  background-position: center 40%; /* show more scenery */
+  background-position: center center;
   background-repeat: no-repeat;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 .hero-inner{ display:flex; align-items:flex-end; }
 .hero-copy{ max-width: 800px; }
-.hero h1{ font-size: 52px; margin: 0 0 12px; letter-spacing: .3px; }
-.hero p{ margin: 0 0 20px; color: var(--muted); font-size: 18px; }
+.hero h1{ font-size: 52px; margin: 0 0 12px; letter-spacing: .3px; color: white; font-weight: 700; text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
+.hero p{ margin: 0 0 20px; color: #f1f5f9; font-size: 18px; text-shadow: 0 1px 8px rgba(0,0,0,0.5); font-weight: 500; }
 .actions{ display:flex; flex-wrap: wrap; gap: 12px; }
 
 @media (max-width: 640px){
@@ -25,7 +20,6 @@
   .hero h1{ font-size: 36px; }
 }
 
-/* Subtle parallax feel on larger screens */
 @media (min-width: 900px){
   .hero{ background-attachment: fixed; }
 }

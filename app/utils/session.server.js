@@ -1,9 +1,6 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 
 const sessionSecret = process.env.SESSION_SECRET;
-if (!sessionSecret) {
-  console.warn("⚠️ SESSION_SECRET is not set. Using a fallback is insecure in production.");
-}
 
 export const storage = createCookieSessionStorage({
   cookie: {

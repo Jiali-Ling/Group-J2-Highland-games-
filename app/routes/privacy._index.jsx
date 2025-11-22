@@ -3,6 +3,11 @@ import { Form, useLoaderData, useActionData, useNavigation } from "@remix-run/re
 import { requireUser, getUser, storage } from "~/utils/session.server";
 import { prisma } from "~/utils/db.server";
 import { sendDataRequestConfirmation } from "~/utils/email.server";
+import privacyStyles from "~/styles/privacy.css";
+
+export function links() {
+  return [{ rel: "stylesheet", href: privacyStyles }];
+}
 
 export async function loader({ request }) {
   const user = await getUser(request);
@@ -10,13 +15,11 @@ export async function loader({ request }) {
     return redirect("/auth?returnTo=/privacy");
   }
 
-  // Get user's data requests
   const dataRequests = await prisma.dataRequest.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" }
   });
 
-  // Get consent logs
   const consentLogs = await prisma.consentLog.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" }
@@ -32,7 +35,6 @@ export async function action({ request }) {
 
   try {
     if (intent === "exportData") {
-      // Create data export request
       await prisma.dataRequest.create({
         data: {
           userId,
@@ -93,7 +95,6 @@ export async function action({ request }) {
       const user = await prisma.user.findUnique({ where: { id: userId } });
       await sendDataRequestConfirmation(user.email, "Account Deletion");
 
-      // Log out the user
       const session = await storage.getSession(request.headers.get("Cookie"));
       return redirect("/", {
         headers: {
@@ -116,7 +117,7 @@ export default function Privacy() {
   const isSubmitting = navigation.state === "submitting";
 
   return (
-    <main className="container" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: "900px" }}>
+    <main className="container" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: "900px", minHeight: "auto" }}>
       <div style={{ marginBottom: "2rem" }}>
         <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>Privacy & Data Rights</h1>
         <p style={{ color: "var(--muted)", fontSize: "1.1rem" }}>
@@ -151,14 +152,13 @@ export default function Privacy() {
       )}
 
       <div style={{ display: "grid", gap: "1.5rem", marginBottom: "3rem" }}>
-        {/* Export Data */}
         <div style={{
           background: "white",
           border: "1px solid #e0e0e0",
           borderRadius: "12px",
-          padding: "2rem"
+          padding: "1.5rem"
         }}>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>📦 Export Your Data</h2>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>📦 Export Your Data</h2>
           <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
             Download a copy of all your personal data in JSON format. This includes your profile, registrations, team memberships, and consent records.
           </p>
@@ -182,14 +182,13 @@ export default function Privacy() {
           </Form>
         </div>
 
-        {/* Correct Data */}
         <div style={{
           background: "white",
           border: "1px solid #e0e0e0",
           borderRadius: "12px",
-          padding: "2rem"
+          padding: "1.5rem"
         }}>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>✏️ Correct Your Data</h2>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>✏️ Correct Your Data</h2>
           <p style={{ color: "var(--muted)", marginBottom: "1rem" }}>
             If any of your personal information is inaccurate or incomplete, you can request a correction.
           </p>
@@ -203,7 +202,7 @@ export default function Privacy() {
                 id="reason"
                 name="reason"
                 required
-                rows="4"
+                rows="3"
                 placeholder="Please describe what information is incorrect and what it should be..."
                 style={{
                   width: "100%",
@@ -231,14 +230,13 @@ export default function Privacy() {
           </Form>
         </div>
 
-        {/* Delete Account */}
         <div style={{
           background: "white",
           border: "2px solid #ff6b6b",
           borderRadius: "12px",
-          padding: "2rem"
+          padding: "1.5rem"
         }}>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: "0.5rem", color: "#ff6b6b" }}>🗑️ Delete Your Account</h2>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem", color: "#ff6b6b" }}>🗑️ Delete Your Account</h2>
           <p style={{ color: "var(--muted)", marginBottom: "0.5rem" }}>
             Permanently delete your account and all associated personal data.
           </p>
@@ -246,9 +244,9 @@ export default function Privacy() {
             background: "rgba(255, 107, 107, 0.1)",
             border: "1px solid rgba(255, 107, 107, 0.3)",
             borderRadius: "8px",
-            padding: "1rem",
+            padding: "0.75rem",
             marginBottom: "1rem",
-            fontSize: "0.9rem"
+            fontSize: "0.85rem"
           }}>
             <strong>⚠️ Warning:</strong> This action cannot be undone. The following data will be permanently deleted:
             <ul style={{ marginTop: "0.5rem", marginLeft: "1.5rem" }}>
@@ -300,7 +298,6 @@ export default function Privacy() {
         </div>
       </div>
 
-      {/* Data Requests History */}
       <section style={{ marginBottom: "3rem" }}>
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>Your Data Requests</h2>
         {dataRequests.length === 0 ? (
@@ -351,7 +348,6 @@ export default function Privacy() {
         )}
       </section>
 
-      {/* Consent Logs */}
       <section>
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>Consent History</h2>
         {consentLogs.length === 0 ? (

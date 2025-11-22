@@ -8,12 +8,11 @@ import "~/styles/auth.css";
 
 export async function action({ request }) {
   const formData = await request.formData();
-  const authType = formData.get("authType"); // "login" or "register"
+  const authType = formData.get("authType");
   const email = formData.get("email");
   const password = formData.get("password");
   const returnTo = formData.get("returnTo") || "/events";
 
-  // Validation
   const errors = {};
   
   if (!email || !email.includes("@")) {
@@ -40,7 +39,6 @@ export async function action({ request }) {
       return json({ errors, authType }, { status: 400 });
     }
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
@@ -52,17 +50,21 @@ export async function action({ request }) {
       }, { status: 409 });
     }
 
-    // Create user
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         email,
         passwordHash,
-        role: "participant"
-      }
+        role: "participant",
+        profile: {
+          create: {
+            fullName: name
+          }
+        }
+      },
+      include: { profile: true }
     });
 
-    // Create session
     const session = await storage.getSession(request.headers.get("Cookie"));
     session.set("userId", user.id);
     session.set("userEmail", user.email);
@@ -74,7 +76,6 @@ export async function action({ request }) {
       }
     });
   } else {
-    // Login
     if (Object.keys(errors).length > 0) {
       return json({ errors, authType }, { status: 400 });
     }
@@ -98,7 +99,6 @@ export async function action({ request }) {
       }, { status: 401 });
     }
 
-    // Create session
     const session = await storage.getSession(request.headers.get("Cookie"));
     session.set("userId", user.id);
     session.set("userEmail", user.email);
@@ -125,7 +125,6 @@ export default function Auth() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isSubmitting = navigation.state === "submitting";
   
-  // Determine active tab from URL or action data
   const defaultTab = searchParams.get("mode") === "register" ? "register" : "login";
   const [activeTab, setActiveTab] = useState(actionData?.authType || defaultTab);
 
@@ -203,7 +202,6 @@ export default function Auth() {
           </div>
         )}
 
-        {/* Login Form */}
         {activeTab === "login" && (
           <Form method="post" className="auth-form">
             <input type="hidden" name="authType" value="login" />
@@ -263,13 +261,12 @@ export default function Auth() {
                 </button>
               </p>
               <p className="form-hint" style={{ color: '#000000', fontWeight: '500', fontSize: '0.75rem', marginTop: '1.5rem', letterSpacing: '0.3px', lineHeight: '1.5' }}>
-                💡 Test account: <strong>test@example.com</strong> / <strong>password123</strong>
+                💡 Test account: <strong>B01812585@student.uws.ac.uk</strong> / <strong>password123</strong>
               </p>
             </div>
           </Form>
         )}
 
-        {/* Register Form */}
         {activeTab === "register" && (
           <Form method="post" className="auth-form">
             <input type="hidden" name="authType" value="register" />
@@ -357,7 +354,6 @@ export default function Auth() {
         </div>
       </div>
 
-      {/* Right Panel - Only show for register */}
       {activeTab === "register" && (
         <div className="auth-right-panel">
           <div className="auth-right-content">

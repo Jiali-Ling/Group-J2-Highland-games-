@@ -42,11 +42,11 @@ export default function Events() {
           </div>
           <div className="search-field">
             <label htmlFor="from">From Date</label>
-            <input id="from" name="from" type="date" defaultValue={fromDate} />
+            <input id="from" name="from" type="date" defaultValue={fromDate} lang="en-US" />
           </div>
           <div className="search-field">
             <label htmlFor="to">To Date</label>
-            <input id="to" name="to" type="date" defaultValue={toDate} />
+            <input id="to" name="to" type="date" defaultValue={toDate} lang="en-US" />
           </div>
           <button type="submit" className="btn btn-primary search-btn">Search</button>
         </div>
@@ -56,16 +56,37 @@ export default function Events() {
         <p className="empty-state">No events found. Try adjusting your search.</p>
       ) : (
         <div className="events-grid">
-          {events.map(e => (
-            <Link key={e.id} to={`/events/${e.id}`} className="event-card">
-              <h3>{e.name}</h3>
-              <p className="event-desc">{e.description}</p>
-              <div className="event-meta">
-                <span className="event-date">📅 {new Date(e.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                <span className="event-location">📍 {e.location}</span>
-              </div>
-            </Link>
-          ))}
+          {events.map((e, index) => {
+            const eventDate = new Date(e.date);
+            const day = eventDate.getDate();
+            const month = eventDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+            
+            const eventImages = [
+              '/images/1938ae1dfdf1494b5227a5e724ba7e9.png',
+              '/images/45178760afd62401fb4157adb859434.png'
+            ];
+            const backgroundImage = eventImages[index % eventImages.length];
+            
+            return (
+              <Link key={e.id} to={`/events/${e.id}`} className="event-card">
+                <div className="event-card-image" style={{ backgroundImage: `url('${backgroundImage}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                  <div className="event-date-badge">
+                    <span className="event-date-badge-day">{day}</span>
+                    <span className="event-date-badge-month">{month}</span>
+                  </div>
+                </div>
+                <div className="event-card-content">
+                  <h3>{e.name}</h3>
+                  <p className="event-desc">{e.description}</p>
+                  <div className="event-meta">
+                    <span className="event-date">📅 {eventDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    <span className="event-location">📍 {e.location}</span>
+                  </div>
+                  <span className="event-cta">EVENT DETAILS</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </main>

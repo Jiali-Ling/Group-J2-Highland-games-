@@ -1,12 +1,10 @@
 @echo off
-cd /d "%~dp0"
-echo Starting server...
-if not exist "node_modules" call npm install
-if not exist "prisma\dev.db" call npm run setup
+echo Installing dependencies...
+call npm.cmd install
 echo.
-echo Open: http://localhost:3000
-echo User: duncan@highlands.com / password123
-echo Admin: admin@example.com / admin123
+echo Setting up database...
+call npm.cmd run setup
 echo.
-call npm run dev
-pause
+echo Starting development server...
+call npm.cmd run dev
+

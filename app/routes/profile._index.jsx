@@ -2,6 +2,11 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData, useActionData, useNavigation } from "@remix-run/react";
 import { requireUser, getUser } from "~/utils/session.server";
 import { prisma } from "~/utils/db.server";
+import profileStyles from "~/styles/profile.css";
+
+export function links() {
+  return [{ rel: "stylesheet", href: profileStyles }];
+}
 
 export async function loader({ request }) {
   const user = await getUser(request);
@@ -35,7 +40,6 @@ export async function action({ request }) {
         return json({ error: "Full name must be at least 2 characters" }, { status: 400 });
       }
 
-      // Check if profile exists
       const existingProfile = await prisma.userProfile.findUnique({
         where: { userId }
       });
@@ -93,12 +97,12 @@ export default function Profile() {
 
       {actionData?.error && (
         <div style={{
-          background: "rgba(255, 107, 107, 0.1)",
-          border: "1px solid rgba(255, 107, 107, 0.3)",
+          background: "var(--error-bg)",
+          border: "1px solid var(--error-border)",
           borderRadius: "8px",
           padding: "1rem",
           marginBottom: "1.5rem",
-          color: "#ff6b6b"
+          color: "var(--error-text)"
         }}>
           ⚠️ {actionData.error}
         </div>
@@ -106,26 +110,26 @@ export default function Profile() {
 
       {actionData?.success && (
         <div style={{
-          background: "rgba(40, 167, 69, 0.1)",
-          border: "1px solid rgba(40, 167, 69, 0.3)",
+          background: "var(--success-bg)",
+          border: "1px solid var(--success-border)",
           borderRadius: "8px",
           padding: "1rem",
           marginBottom: "1.5rem",
-          color: "#28a745"
+          color: "var(--success-text)"
         }}>
           ✓ {actionData.message}
         </div>
       )}
 
       <div style={{
-        background: "white",
-        border: "1px solid #e0e0e0",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
         borderRadius: "12px",
         padding: "2rem",
         marginBottom: "2rem"
       }}>
-        <h2 style={{ marginBottom: "0.5rem" }}>Account Information</h2>
-        <p style={{ color: "var(--muted)", marginBottom: "1rem", fontSize: "0.9rem" }}>
+        <h2 style={{ marginBottom: "0.5rem", color: "var(--heading-text)" }}>Account Information</h2>
+        <p style={{ color: "var(--description-text)", marginBottom: "1rem", fontSize: "0.9rem" }}>
           Your email address is used for login and notifications
         </p>
         <div style={{ padding: "1rem", background: "#f5f5f5", borderRadius: "8px" }}>
@@ -139,17 +143,17 @@ export default function Profile() {
       </div>
 
       <div style={{
-        background: "white",
-        border: "1px solid #e0e0e0",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
         borderRadius: "12px",
         padding: "2rem"
       }}>
-        <h2 style={{ marginBottom: "1rem" }}>Personal Information</h2>
+        <h2 style={{ marginBottom: "1rem", color: "var(--heading-text)" }}>Personal Information</h2>
         <Form method="post">
           <input type="hidden" name="intent" value="updateProfile" />
           
           <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="fullName" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label htmlFor="fullName" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
               Full Name *
             </label>
             <input
@@ -161,14 +165,16 @@ export default function Profile() {
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
+                border: "1px solid var(--input-border)",
+                borderRadius: "8px",
+                background: "var(--input-bg)",
+                color: "var(--input-text)"
               }}
             />
           </div>
 
           <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="dateOfBirth" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label htmlFor="dateOfBirth" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
               Date of Birth
             </label>
             <input
@@ -179,14 +185,16 @@ export default function Profile() {
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
+                border: "1px solid var(--input-border)",
+                borderRadius: "8px",
+                background: "var(--input-bg)",
+                color: "var(--input-text)"
               }}
             />
           </div>
 
           <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="phone" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label htmlFor="phone" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
               Phone Number
             </label>
             <input
@@ -197,14 +205,16 @@ export default function Profile() {
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
+                border: "1px solid var(--input-border)",
+                borderRadius: "8px",
+                background: "var(--input-bg)",
+                color: "var(--input-text)"
               }}
             />
           </div>
 
           <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label htmlFor="address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
               Address
             </label>
             <textarea
@@ -215,14 +225,16 @@ export default function Profile() {
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
+                border: "1px solid var(--input-border)",
+                borderRadius: "8px",
+                background: "var(--input-bg)",
+                color: "var(--input-text)"
               }}
             />
           </div>
 
           <div style={{ marginBottom: "1rem" }}>
-            <label htmlFor="emergencyContact" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label htmlFor="emergencyContact" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
               Emergency Contact
             </label>
             <input
@@ -234,14 +246,16 @@ export default function Profile() {
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
+                border: "1px solid var(--input-border)",
+                borderRadius: "8px",
+                background: "var(--input-bg)",
+                color: "var(--input-text)"
               }}
             />
           </div>
 
           <div style={{ marginBottom: "1.5rem" }}>
-            <label htmlFor="medicalInfo" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
+            <label htmlFor="medicalInfo" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
               Medical Information
             </label>
             <textarea
@@ -253,8 +267,10 @@ export default function Profile() {
               style={{
                 width: "100%",
                 padding: "0.75rem",
-                border: "1px solid #ddd",
-                borderRadius: "8px"
+                border: "1px solid var(--input-border)",
+                borderRadius: "8px",
+                background: "var(--input-bg)",
+                color: "var(--input-text)"
               }}
             />
             <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>

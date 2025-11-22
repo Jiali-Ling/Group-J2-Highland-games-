@@ -1,0 +1,27 @@
+main {
+  position: relative;
+  min-height: 100vh;
+}
+
+main::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(245, 247, 250, 0.82)),
+                    var(--profile-bg);
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -1;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  main::before {
+    background-attachment: scroll;
+  }
+}

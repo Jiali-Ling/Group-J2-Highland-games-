@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, LiveReload, Link, useLoaderData, Form } from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, LiveReload, Link, useLoaderData, Form, useLocation } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { storage } from "~/utils/session.server";
 import globalStyles from "./styles/global.css?url";
@@ -24,14 +24,17 @@ export async function loader({ request }) {
 
 export default function App() {
   const { user } = useLoaderData();
+  const location = useLocation();
   
   return (
-    <html lang="en">
+    <html lang="en-US" suppressHydrationWarning>
       <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="Content-Language" content="en-US" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <header className="site-header">
           <div className="container header-inner">
             <Link to="/" className="brand">Paisley Highland Games</Link>
@@ -61,12 +64,12 @@ export default function App() {
           </div>
         </header>
 
-        <Outlet />
+        <Outlet key={location.pathname} />
 
         <footer className="site-footer">
           <div className="container footer-inner">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-              <p>© {new Date().getFullYear()} Paisley Highland Games · Built with Remix</p>
+              <p>© 2025 Paisley Highland Games · Built with Remix</p>
               <div style={{ display: "flex", gap: "1.5rem" }}>
                 <Link to="/privacy" style={{ color: "#666", textDecoration: "none", fontSize: "0.9rem" }}>Privacy Policy</Link>
                 <Link to="/terms" style={{ color: "#666", textDecoration: "none", fontSize: "0.9rem" }}>Terms of Service</Link>
