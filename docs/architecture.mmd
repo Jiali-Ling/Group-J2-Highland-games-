@@ -1,0 +1,33 @@
+graph TB
+    subgraph "Client Layer"
+        A[Browser] --> B[React Components]
+        B --> C[Remix Router]
+    end
+    
+    subgraph "Server Layer"
+        C --> D[Remix Server]
+        D --> E[Loader Functions]
+        D --> F[Action Functions]
+        E --> G[Session Management]
+        F --> G
+        G --> H[Authentication]
+    end
+    
+    subgraph "Data Layer"
+        E --> I[Prisma ORM]
+        F --> I
+        I --> J[(PostgreSQL Database)]
+        I --> K[(SQLite Dev)]
+    end
+    
+    subgraph "External Services"
+        D --> L[Email Service]
+        G --> M[Cookie Storage]
+    end
+    
+    style A fill:#e1f5ff
+    style D fill:#fff3cd
+    style I fill:#d4edda
+    style J fill:#f8d7da
+    style K fill:#f8d7da
+

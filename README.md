@@ -1,5 +1,7 @@
 # Highland Games Event Management
 
+**Live Demo:** [Deploy URL will be added after deployment]
+
 A web application for managing Highland Games events with user registration, team management, event sign-ups, and admin approval.
 
 ## Features
@@ -33,14 +35,14 @@ npm run dev
 
 Open http://localhost:3000
 
-### Test Accounts
+### Test Accounts (Demo Only)
 
-User (Owner): B01812585@student.uws.ac.uk / password123  
-Team Members: jiali.ling@example.com, yuhan.shi@example.com / password123  
-Admin: admin@example.com / admin123  
-Team Code: TEST1234
+**Note: These accounts are for educational demonstration purposes only.**
 
-Note: Use the student account (B01812585@student.uws.ac.uk) as the primary test account for registration and team management.
+User (Owner): demo+owner@example.com / DemoPassword123!  
+Team Members: demo+member1@example.com, demo+member2@example.com / DemoPassword123!  
+Admin: demo+admin@example.com / DemoPassword123!  
+Team Code: DEMO1234
 
 ## Database Reset
 
@@ -70,6 +72,7 @@ app/routes/          - Page routes
 app/utils/           - Server utilities  
 prisma/              - Database schema and seed
 public/              - Static files
+docs/                - Documentation and diagrams
 ```
 
 ## Available Scripts
@@ -87,9 +90,186 @@ Edit `app/styles/global.css`
 Change Text Content:  
 Edit `app/config/site-content.js`
 
+## Documentation
+
+See [docs/](./docs/) for detailed documentation including:
+- [Process Flow Diagram](./docs/flow.mmd)
+- [Architecture Diagram](./docs/architecture.mmd)
+- [Database ER Diagram](./docs/er.mmd)
+- [Technology Comparison](./docs/tech-comparison.md)
+
+## Hosting & Scaling
+
+### Platform Selection
+
+This project is designed to deploy on Render or Railway for the following reasons:
+
+**Render:**
+- Simple deployment process with GitHub integration
+- Free tier available for PostgreSQL databases
+- Automatic SSL certificates
+- Built-in environment variable management
+- Supports Node.js 18+ and PostgreSQL
+
+**Railway:**
+- Docker support for consistent deployments
+- PostgreSQL add-on available
+- Simple pricing model
+- Good for development and production
+
+### Deployment Configuration
+
+**Environment Variables Required:**
+- `DATABASE_URL` - PostgreSQL connection string (e.g., `postgresql://user:password@host:5432/dbname`)
+- `SESSION_SECRET` - Random secret string for session encryption
+- `NODE_ENV` - Set to `production` for production deployments
+
+**Build Command:**
+```bash
+npm run build
+```
+
+**Start Command:**
+```bash
+npm start
+```
+
+### Scaling Strategy
+
+**Single Instance (Initial):**
+- One application instance
+- One PostgreSQL database
+- Suitable for low to medium traffic
+
+**Multi-Instance (Horizontal Scaling):**
+- Multiple application instances behind a load balancer
+- Shared PostgreSQL database with connection pooling
+- Session storage moved to Redis or database-backed sessions
+- CDN for static assets
+
+**Database Connection Pooling:**
+- Prisma automatically manages connection pooling
+- Configure `DATABASE_URL` with connection pool parameters
+- Monitor connection usage in production
+
+**Estimated Monthly Costs:**
+- Render Free Tier: $0 (limited hours)
+- Render Starter: $7/month (unlimited hours, 512MB RAM)
+- Railway Hobby: $5/month (512MB RAM, $0.000463/GB-hour)
+- PostgreSQL (Render): Free tier available, or $7/month for production
+
+## Data & Privacy
+
+### Data Categories
+
+This application collects and processes the following personal data:
+
+**User Account Data:**
+- Email address
+- Encrypted password hash
+- Account creation timestamp
+
+**User Profile Data:**
+- Full name
+- Date of birth (optional)
+- Phone number (optional)
+- Address (optional)
+- Emergency contact information (optional)
+- Medical information (optional, sensitive)
+
+**Event Registration Data:**
+- Event selection
+- Competition category
+- Team association (if applicable)
+- Registration status and history
+
+**Consent Records:**
+- Consent type (privacy policy, event registration, etc.)
+- Agreement status (true/false)
+- IP address (for audit purposes)
+- Browser user agent
+- Timestamp
+
+**Data Request Records:**
+- Request type (export, correction, deletion)
+- Request status
+- Processing timestamps
+
+### Consent Management
+
+All user consents are logged in the `ConsentLog` table with:
+- Consent type identifier
+- User agreement status
+- IP address and user agent for audit trail
+- Timestamp of consent
+
+Consent records are created when users:
+- Register for events
+- Agree to privacy policy
+- Accept terms and conditions
+
+### Data Rights (GDPR)
+
+Users can exercise their GDPR rights through the `/privacy` page:
+
+**Data Export:**
+- Request a copy of all personal data
+- Data is exported in JSON format
+- Includes all user data, registrations, team memberships, and consent records
+
+**Data Correction:**
+- Submit requests to correct inaccurate information
+- Admin reviews and processes correction requests
+
+**Data Deletion:**
+- Request account and data deletion
+- Admin processes deletion requests
+- Cascade deletion removes all associated data
+
+### Tracking & Analytics
+
+**What We Track:**
+- Page visits and navigation (server-side logs)
+- Application performance metrics
+- Error logs for debugging
+
+**What We Don't Track:**
+- Personal browsing behavior outside this application
+- Third-party website visits
+- Cross-site tracking
+- Behavioral analytics without consent
+
+**Analytics Implementation:**
+- Server logs record access patterns (IP addresses, timestamps, routes)
+- No client-side tracking scripts by default
+- Google Analytics can be integrated with explicit user consent (GDPR compliant)
+
 ## GitHub
 
 https://github.com/Jiali-Ling/Group-J2-Highland-games-
+
+## Assessment Checklist
+
+### Required Deliverables
+
+- [ ] GitHub repository link: https://github.com/Jiali-Ling/Group-J2-Highland-games-
+- [ ] Live deployment URL: [To be added after deployment]
+- [ ] Database read/write screenshots:
+  - [ ] User registration flow
+  - [ ] Event registration submission
+  - [ ] Admin approval/rejection process
+  - [ ] GDPR data export request
+  - [ ] Account deletion request
+- [ ] Process flow diagram: [docs/flow.mmd](./docs/flow.mmd)
+- [ ] Architecture diagram: [docs/architecture.mmd](./docs/architecture.mmd)
+- [ ] Database ER diagram: [docs/er.mmd](./docs/er.mmd)
+- [ ] Hosting platform justification and cost analysis: See "Hosting & Scaling" section above
+- [ ] Academic references: [To be included in report]
+- [ ] Student declaration and anonymization note: [To be included in report]
+
+### Student Declaration
+
+This project is submitted for educational assessment purposes. All code, documentation, and diagrams are original work created for this assignment. Test accounts and sample data are for demonstration only and do not represent real users or events.
 
 ## License
 

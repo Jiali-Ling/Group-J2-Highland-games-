@@ -33,11 +33,14 @@ async function main() {
     console.log("User profile updated successfully");
   }
   
+  const demoPassword = "DemoPassword123!";
+  const passwordHash = await bcrypt.hash(demoPassword, 10);
+  
   if (!existingUser) {
     const user1 = await prisma.user.create({
       data: {
-        email: "B01812585@student.uws.ac.uk",
-        passwordHash: await bcrypt.hash("password123", 10),
+        email: "demo+owner@example.com",
+        passwordHash: passwordHash,
         role: "participant",
         emailVerified: true
       }
@@ -46,18 +49,18 @@ async function main() {
     await prisma.userProfile.create({
       data: {
         userId: user1.id,
-        fullName: "Jiali Ling",
-        dateOfBirth: new Date("2004-09-11"),
-        phone: "+44 7522 291350",
-        address: "Edinburgh, Scotland",
-        emergencyContact: "Family Contact - +44 7522 000000"
+        fullName: "Demo Owner",
+        dateOfBirth: new Date("2000-01-01"),
+        phone: "+44 0000 000000",
+        address: "Demo Address, Scotland",
+        emergencyContact: "Demo Emergency Contact"
       }
     });
     
     const user2 = await prisma.user.create({
       data: {
-        email: "jiali.ling@example.com",
-        passwordHash: await bcrypt.hash("password123", 10),
+        email: "demo+member1@example.com",
+        passwordHash: passwordHash,
         role: "participant",
         emailVerified: true
       }
@@ -66,16 +69,16 @@ async function main() {
     await prisma.userProfile.create({
       data: {
         userId: user2.id,
-        fullName: "Jiali Ling",
+        fullName: "Demo Member One",
         dateOfBirth: new Date("2000-01-15"),
-        phone: "+44 141 555 0125"
+        phone: "+44 0000 000001"
       }
     });
     
     const user3 = await prisma.user.create({
       data: {
-        email: "yuhan.shi@example.com",
-        passwordHash: await bcrypt.hash("password123", 10),
+        email: "demo+member2@example.com",
+        passwordHash: passwordHash,
         role: "participant",
         emailVerified: true
       }
@@ -84,17 +87,17 @@ async function main() {
     await prisma.userProfile.create({
       data: {
         userId: user3.id,
-        fullName: "Yuhan Shi",
+        fullName: "Demo Member Two",
         dateOfBirth: new Date("2000-06-20"),
-        phone: "+44 141 555 0126"
+        phone: "+44 0000 000002"
       }
     });
     
     const team = await prisma.team.create({
       data: {
-        name: "Highland Warriors",
-        description: "A team of dedicated Highland Games athletes",
-        inviteCode: "TEST1234",
+        name: "Demo Team",
+        description: "A demonstration team for testing purposes",
+        inviteCode: "DEMO1234",
         ownerId: user1.id
       }
     });
@@ -107,7 +110,7 @@ async function main() {
       ]
     });
     
-    console.log("Users created: B01812585@student.uws.ac.uk (owner), jiali.ling@example.com, yuhan.shi@example.com (password123)");
+    console.log("Demo users created: demo+owner@example.com, demo+member1@example.com, demo+member2@example.com (DemoPassword123!)");
   }
 
   const existingEvent1 = await prisma.event.findFirst({

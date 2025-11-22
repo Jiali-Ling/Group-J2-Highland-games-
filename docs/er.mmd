@@ -1,0 +1,80 @@
+erDiagram
+    User ||--o| UserProfile : "has"
+    User ||--o{ Registration : "creates"
+    User ||--o{ TeamMember : "is member"
+    User ||--o{ Team : "owns"
+    User ||--o{ ConsentLog : "gives"
+    User ||--o{ DataRequest : "requests"
+    
+    Event ||--o{ Registration : "receives"
+    Event ||--o{ Winner : "has"
+    Event ||--o{ Announcement : "has"
+    
+    Team ||--o{ TeamMember : "contains"
+    Team ||--o{ Registration : "registers for"
+    
+    User {
+        int id PK
+        string email UK
+        string passwordHash
+        string role
+        datetime createdAt
+    }
+    
+    UserProfile {
+        int id PK
+        int userId FK
+        string fullName
+        datetime dateOfBirth
+        string phone
+        string address
+        string medicalInfo
+    }
+    
+    Event {
+        int id PK
+        string name
+        string description
+        datetime date
+        string location
+        boolean registrationOpen
+    }
+    
+    Registration {
+        int id PK
+        int eventId FK
+        int userId FK
+        int teamId FK
+        string name
+        string email
+        string category
+        string status
+        datetime submittedAt
+        datetime reviewedAt
+    }
+    
+    Team {
+        int id PK
+        int ownerId FK
+        string name
+        string inviteCode UK
+    }
+    
+    ConsentLog {
+        int id PK
+        int userId FK
+        string consentType
+        boolean agreed
+        string ipAddress
+        datetime createdAt
+    }
+    
+    DataRequest {
+        int id PK
+        int userId FK
+        string requestType
+        string status
+        string reason
+        datetime createdAt
+    }
+

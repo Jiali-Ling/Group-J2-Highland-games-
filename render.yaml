@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: highland-games
+    env: node
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: demo+admin@example.com
+      - key: ADMIN_PASSWORD
+        value: DemoPassword123!
+

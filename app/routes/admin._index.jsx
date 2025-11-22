@@ -125,14 +125,14 @@ export default function Admin() {
           <Form method="post" className="login-form">
             <div className="form-group">
               <label htmlFor="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="admin@example.com" required />
+              <input id="email" name="email" type="email" placeholder="demo+admin@example.com" required />
             </div>
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input id="password" name="password" type="password" placeholder="Enter password" required />
             </div>
             <button type="submit" name="_intent" value="login" className="btn btn-primary">Login</button>
-            <p className="hint">Default: admin@example.com / admin123</p>
+            <p className="hint">Demo: demo+admin@example.com / DemoPassword123!</p>
           </Form>
         </div>
       </main>
