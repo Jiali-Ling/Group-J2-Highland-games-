@@ -51,16 +51,21 @@ async function main() {
   const jiali2 = await upsertUser({ email: "jiali.ling@example.com",  password: "password123", role: "participant", fullName: "Jiali Ling" });
   const yuhan = await upsertUser({ email: "yuhan.shi@example.com",   password: "password123", role: "participant", fullName: "Yuhan Shi" });
 
-  // Upsert two teams
+  // Upsert three teams (two for Yuhan Shi)
   await prisma.team.upsert({
     where: { inviteCode: "JIALITEAM1" },
-    update: { name: "Jiali's Highlanders", description: "Team led by Jiali Ling", ownerId: jiali.id },
-    create: { name: "Jiali's Highlanders", description: "Team led by Jiali Ling", inviteCode: "JIALITEAM1", ownerId: jiali.id },
+    update: { name: "Jiali's Caber Tossers", description: "Team led by Jiali Ling", ownerId: jiali.id },
+    create: { name: "Jiali's Caber Tossers", description: "Team led by Jiali Ling", inviteCode: "JIALITEAM1", ownerId: jiali.id },
   });
   await prisma.team.upsert({
     where: { inviteCode: "YUHANTEAM1" },
-    update: { name: "Yuhan's Warriors", description: "Team led by Yuhan Shi", ownerId: yuhan.id },
-    create: { name: "Yuhan's Warriors", description: "Team led by Yuhan Shi", inviteCode: "YUHANTEAM1", ownerId: yuhan.id },
+    update: { name: "Yuhan's Stone Putters", description: "Team led by Yuhan Shi", ownerId: yuhan.id },
+    create: { name: "Yuhan's Stone Putters", description: "Team led by Yuhan Shi", inviteCode: "YUHANTEAM1", ownerId: yuhan.id },
+  });
+  await prisma.team.upsert({
+    where: { inviteCode: "YUHANTEAM2" },
+    update: { name: "Yuhan's Hammer Throwers", description: "Second team led by Yuhan Shi", ownerId: yuhan.id },
+    create: { name: "Yuhan's Hammer Throwers", description: "Second team led by Yuhan Shi", inviteCode: "YUHANTEAM2", ownerId: yuhan.id },
   });
   const event1 = await upsertEvent("Paisley Highland Games 2025", {
     description: "Traditional Highland athletics featuring caber toss, stone put, hammer throw, and Highland dancing.",
