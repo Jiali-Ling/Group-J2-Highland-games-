@@ -38,10 +38,11 @@ Test Accounts (Demo Only)
 
 Note: These accounts are for educational demonstration purposes only.
 
-User (Owner): demo+owner@example.com / DemoPassword123!
-Team Members: demo+member1@example.com, demo+member2@example.com / DemoPassword123!
-Admin: demo+admin@example.com / DemoPassword123!
-Team Code: DEMO1234
+
+User (Owner): B01812585@student.uws.ac.uk / password123
+Team Members: jiali.ling@example.com, yuhan.shi@example.com / password123
+Admin: admin@example.com / admin123
+Team Code: TEST1234
 
 Database Reset
 

@@ -31,8 +31,8 @@ Step 3: Set Environment Variables
 NODE_ENV = production
 DATABASE_URL = [Your PostgreSQL connection string from Step 1]
 SESSION_SECRET = [Generate a random string, e.g., openssl rand -base64 32]
-ADMIN_EMAIL = demo+admin@example.com
-ADMIN_PASSWORD = DemoPassword123!
+ADMIN_EMAIL = admin@example.com
+ADMIN_PASSWORD = admin123
 
 Step 4: Run Database Migrations
 
@@ -67,8 +67,8 @@ Step 3: Set Environment Variables
 DATABASE_URL = [Your PostgreSQL connection string]
 SESSION_SECRET = [Generate a random string]
 NODE_ENV = production
-ADMIN_EMAIL = demo+admin@example.com
-ADMIN_PASSWORD = DemoPassword123!
+ADMIN_EMAIL = admin@example.com
+ADMIN_PASSWORD = admin123
 
 Step 4: Run Database Migrations
 
