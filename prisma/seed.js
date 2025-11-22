@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 async function upsertUser({ email, password, role = "participant", fullName, profile = {} }) {
   const emailNorm = email.toLowerCase();
+  console.log("Upserting user:", emailNorm);
   const hash = await bcrypt.hash(password, 10);
   const user = await prisma.user.upsert({
     where: { email: emailNorm },
@@ -31,6 +32,7 @@ async function upsertEvent(keyName, data) {
 }
 
 async function main() {
+  console.log("Seeding database...");
   const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@example.com").toLowerCase();
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
   await upsertUser({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD, role: "admin", fullName: "Admin" });
