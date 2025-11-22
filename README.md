@@ -1,7 +1,7 @@
 
 Highland Games Event Management
 
-Live Demo: Deploy URL will be added after deployment
+Live Demo: https://group-j2-highland-games.onrender.com
 
 A web application for managing Highland Games events with user registration, team management, event signups, and admin approval.
 
