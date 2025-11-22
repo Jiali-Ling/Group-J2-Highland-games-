@@ -36,8 +36,8 @@ async function main() {
   const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "admin@example.com").toLowerCase();
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
   await upsertUser({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD, role: "admin", fullName: "Admin" });
-  await upsertUser({
-    email: "B01812585@student.uws.ac.uk",
+  const jiali = await upsertUser({
+    email: "b01812585@student.uws.ac.uk",
     password: "password123",
     role: "participant",
     fullName: "Jiali Ling",
@@ -48,8 +48,20 @@ async function main() {
       emergencyContact: "Family Contact - +44 7522 000000",
     },
   });
-  await upsertUser({ email: "jiali.ling@example.com",  password: "password123", role: "participant", fullName: "Jiali Ling" });
-  await upsertUser({ email: "yuhan.shi@example.com",   password: "password123", role: "participant", fullName: "Yuhan Shi" });
+  const jiali2 = await upsertUser({ email: "jiali.ling@example.com",  password: "password123", role: "participant", fullName: "Jiali Ling" });
+  const yuhan = await upsertUser({ email: "yuhan.shi@example.com",   password: "password123", role: "participant", fullName: "Yuhan Shi" });
+
+  // Upsert two teams
+  await prisma.team.upsert({
+    where: { inviteCode: "JIALITEAM1" },
+    update: { name: "Jiali's Highlanders", description: "Team led by Jiali Ling", ownerId: jiali.id },
+    create: { name: "Jiali's Highlanders", description: "Team led by Jiali Ling", inviteCode: "JIALITEAM1", ownerId: jiali.id },
+  });
+  await prisma.team.upsert({
+    where: { inviteCode: "YUHANTEAM1" },
+    update: { name: "Yuhan's Warriors", description: "Team led by Yuhan Shi", ownerId: yuhan.id },
+    create: { name: "Yuhan's Warriors", description: "Team led by Yuhan Shi", inviteCode: "YUHANTEAM1", ownerId: yuhan.id },
+  });
   const event1 = await upsertEvent("Paisley Highland Games 2025", {
     description: "Traditional Highland athletics featuring caber toss, stone put, hammer throw, and Highland dancing.",
     date: new Date("2025-12-15T10:00:00Z"),
