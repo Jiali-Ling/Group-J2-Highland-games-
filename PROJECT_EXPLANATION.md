@@ -675,26 +675,3 @@ This project implements a Highland Games event management system with the follow
 5. Security: Password encryption, session management, permission control
 6. Containerization: Provides Docker support
 7. GitHub: Code uploaded to GitHub
-
-Future improvements:
-1. Deploy to cloud server (Vercel/Railway, etc.)
-2. Add comprehensive API documentation
-3. Create database ER diagram
-4. Enhance GDPR compliance documentation
-
-## FAQ
-
-Q: Why JavaScript instead of TypeScript?
-A: JavaScript is completely valid. If TypeScript is needed, change .jsx to .tsx and add type definitions.
-
-Q: How to test API?
-A: Remix API is integrated in routes. You can:
-1. Directly visit pages (automatically calls loader)
-2. Submit forms (automatically calls action)
-3. Use curl command to test
-
-Q: How to deploy?
-A:
-1. Vercel: Connect GitHub repository, auto deploy
-2. Railway: Upload Docker image or connect GitHub
-3. Manual: Run npm run build && npm start on server
