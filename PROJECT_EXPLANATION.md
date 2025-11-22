@@ -15,10 +15,10 @@ Users can exercise GDPR data rights (export, correct, delete)
 ### Frontend: React + Remix
 
 Why Remix:
-Course allows Remix or Next.js
-React is the course focus
-Remix provides server-side rendering
-No need to separate frontend and backend
+Remix is a modern full-stack framework that supports both Remix and Next.js patterns
+React provides excellent component-based architecture
+Remix provides server-side rendering for better performance
+No need to separate frontend and backend, simplifying development
 
 Code location:
 app/routes/ - All page routes (React components)
@@ -30,9 +30,9 @@ Example: app/routes/_index.jsx is the home page using React components
 ### Backend: Node.js + Remix
 
 Why Node.js:
-Course default direction
-Remix has built-in backend
-Same language for frontend and backend
+Node.js is widely used and well-supported
+Remix has built-in backend capabilities
+Same language for frontend and backend reduces complexity
 
 Code location:
 app/routes/*.jsx - Each route file has loader and action functions
@@ -45,10 +45,10 @@ Example: app/routes/events._index.jsx loader function gets event list from datab
 ### Database: Prisma ORM + SQLite
 
 Why Prisma:
-Relational database (course allows relational or MongoDB)
-SQLite is simple for development
+Relational database fits the data model well
+SQLite is simple for development, no separate server needed
 Prisma provides type-safe database access
-Auto-generates migration files
+Auto-generates migration files for schema changes
 
 Code location:
 prisma/schema.prisma - Database structure definition
@@ -58,9 +58,9 @@ app/utils/db.server.js - Database connection
 ### Container: Docker
 
 Why Docker:
-Course focus on Docker
-Easy deployment
-Consistent environment
+Docker provides containerization for easy deployment
+Simplifies environment setup and configuration
+Ensures consistent environment across development and production
 
 Code location:
 Dockerfile - Container build configuration
@@ -567,55 +567,53 @@ highland-games-starter/
 └── README.md
 ```
 
-## Meeting Assignment Requirements
+## Project Features
 
-### Required Requirements Checklist
+### Core Functionality
 
-1. Code and Deployment
+Code and Deployment
 GitHub repository: Link provided in README.md
 Database interaction: All pages interact with Prisma database
 Online accessible: Supports Docker deployment to cloud server
 
-2. API and Data
+API and Data
 Database table design: 8 tables with clear relationships (see prisma/schema.prisma)
 API access method: Uses Remix loader/action (REST style)
 SQL queries: Executes SQL queries through Prisma ORM
 
-3. Frontend/Client
+Frontend/Client
 React: All pages are React components
 JSON consumption: Uses useLoaderData() to automatically get JSON data
 
-4. Server
+Server
 Node.js: Uses Node.js 18+
-Remix framework: Full-stack SSR framework (meets assignment requirements)
+Remix framework: Full-stack SSR framework
 
-5. Database
+Database
 Relational database: Uses SQLite (development) / PostgreSQL (production)
 Schema explanation: prisma/schema.prisma clearly defines all table structures
 Query examples: All route files have database queries
 
-6. Containerization
+Containerization
 Docker support: Provides Dockerfile and docker-compose.yml
 
-7. GDPR and Security
+GDPR and Security
 Consent mechanism: ConsentLog table records all consents
 Data export: /privacy page supports data export requests
 Data correction: Supports data correction requests
 Data deletion: Supports account deletion requests
 Authentication: Uses bcrypt to encrypt passwords, Cookie session management
 
-### Report Content
+### Technology Choices
 
-1. Technology Stack Section
+Technology Stack
 
-Need to explain:
 Client: React 18 + Remix 2.9
 Server: Node.js 18 + Remix (built-in server)
 Database: Prisma ORM + SQLite/PostgreSQL
 Storage: SQLite file (development) or PostgreSQL (production)
 Plugins/Integration: bcryptjs (password encryption)
 
-Alternative comparison:
 Why Remix instead of Next.js?
   Remix data loading is simpler (loader function)
   Better form handling (action function)
@@ -626,9 +624,8 @@ Why SQLite instead of MongoDB?
   SQLite is simple for development, no need to install database server
   Prisma ORM provides type safety
 
-2. Hosting Section
+Hosting Options
 
-Need to explain:
 Hosting service options:
   Vercel (recommended, supports Remix)
   Railway (supports Docker)
@@ -650,9 +647,8 @@ Tracking and statistics:
   Can integrate Google Analytics (requires user consent, GDPR compliant)
   Server logs record access
 
-3. Implementation and Prototype
+### Implementation Details
 
-Need to show:
 Database read/write:
   Read: loader function in app/routes/events._index.jsx
   Write: action function in app/routes/auth.jsx
@@ -668,15 +664,9 @@ Diagrams:
   Architecture diagram: Frontend (React) → Backend (Remix) → Database (Prisma)
   API flow diagram: loader/action data flow
 
-### Prohibited Content
+## Project Overview
 
-Not using Microsoft solutions: Uses open source technology stack
-Not using PHP/Laravel: Uses Node.js + Remix
-Not using WordPress: Uses custom React application
-
-## Summary
-
-This project fully meets assignment requirements:
+This project implements a Highland Games event management system with the following features:
 
 1. Technology stack: React + Remix + Node.js + Prisma + SQLite
 2. Database interaction: All features interact with database
@@ -686,11 +676,11 @@ This project fully meets assignment requirements:
 6. Containerization: Provides Docker support
 7. GitHub: Code uploaded to GitHub
 
-Next steps:
+Future improvements:
 1. Deploy to cloud server (Vercel/Railway, etc.)
-2. Explain technology choices and architecture design in report
-3. Provide API documentation and database ER diagram
-4. Explain GDPR compliance implementation details
+2. Add comprehensive API documentation
+3. Create database ER diagram
+4. Enhance GDPR compliance documentation
 
 ## FAQ
 
