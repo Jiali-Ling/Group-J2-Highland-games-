@@ -6,111 +6,72 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
   
-  const existingUser = await prisma.user.findUnique({
-    where: { email: "B01812585@student.uws.ac.uk" }
-  });
-  
-  if (existingUser) {
-    console.log("Updating existing user profile...");
-    await prisma.userProfile.upsert({
-      where: { userId: existingUser.id },
-      update: {
-        fullName: "Jiali Ling",
-        dateOfBirth: new Date("2004-09-11"),
-        phone: "+44 7522 291350",
-        address: "Edinburgh, Scotland",
-        emergencyContact: "Family Contact - +44 7522 000000"
-      },
-      create: {
-        userId: existingUser.id,
-        fullName: "Jiali Ling",
+
+  // 统一写入真实演示账号
+  const users = [
+    {
+      email: "B01812585@student.uws.ac.uk",
+      password: "password123",
+      fullName: "Jiali Ling",
+      role: "participant",
+      profile: {
         dateOfBirth: new Date("2004-09-11"),
         phone: "+44 7522 291350",
         address: "Edinburgh, Scotland",
         emergencyContact: "Family Contact - +44 7522 000000"
       }
-    });
-    console.log("User profile updated successfully");
-  }
-  
-  const demoPassword = "DemoPassword123!";
-  const passwordHash = await bcrypt.hash(demoPassword, 10);
-  
-  if (!existingUser) {
-    const user1 = await prisma.user.create({
-      data: {
-        email: "demo+owner@example.com",
-        passwordHash: passwordHash,
-        role: "participant",
-        emailVerified: true
-      }
-    });
-    
-    await prisma.userProfile.create({
-      data: {
-        userId: user1.id,
-        fullName: "Demo Owner",
-        dateOfBirth: new Date("2000-01-01"),
-        phone: "+44 0000 000000",
-        address: "Demo Address, Scotland",
-        emergencyContact: "Demo Emergency Contact"
-      }
-    });
-    
-    const user2 = await prisma.user.create({
-      data: {
-        email: "demo+member1@example.com",
-        passwordHash: passwordHash,
-        role: "participant",
-        emailVerified: true
-      }
-    });
-    
-    await prisma.userProfile.create({
-      data: {
-        userId: user2.id,
-        fullName: "Demo Member One",
-        dateOfBirth: new Date("2000-01-15"),
-        phone: "+44 0000 000001"
-      }
-    });
-    
-    const user3 = await prisma.user.create({
-      data: {
-        email: "demo+member2@example.com",
-        passwordHash: passwordHash,
-        role: "participant",
-        emailVerified: true
-      }
-    });
-    
-    await prisma.userProfile.create({
-      data: {
-        userId: user3.id,
-        fullName: "Demo Member Two",
-        dateOfBirth: new Date("2000-06-20"),
-        phone: "+44 0000 000002"
-      }
-    });
-    
-    const team = await prisma.team.create({
-      data: {
-        name: "Demo Team",
-        description: "A demonstration team for testing purposes",
-        inviteCode: "DEMO1234",
-        ownerId: user1.id
-      }
-    });
-    
-    await prisma.teamMember.createMany({
-      data: [
-        { teamId: team.id, userId: user1.id, role: "owner" },
-        { teamId: team.id, userId: user2.id, role: "member" },
-        { teamId: team.id, userId: user3.id, role: "member" }
-      ]
-    });
-    
-    console.log("Demo users created: demo+owner@example.com, demo+member1@example.com, demo+member2@example.com (DemoPassword123!)");
+    },
+    {
+      email: "jiali.ling@example.com",
+      password: "password123",
+      fullName: "Jiali Ling",
+      role: "participant",
+      profile: {}
+    },
+    {
+      email: "yuhan.shi@example.com",
+      password: "password123",
+      fullName: "Yuhan Shi",
+      role: "participant",
+      profile: {}
+    },
+    {
+      email: "admin@example.com",
+      password: "admin123",
+      fullName: "Admin",
+      role: "admin",
+      profile: {}
+    }
+  ];
+
+  for (const u of users) {
+    let user = await prisma.user.findUnique({ where: { email: u.email } });
+    const hash = await bcrypt.hash(u.password, 10);
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: u.email,
+          passwordHash: hash,
+          role: u.role,
+          emailVerified: true
+        }
+      });
+      console.log(`Created user: ${u.email}`);
+    } else {
+      await prisma.user.update({
+        where: { email: u.email },
+        data: { passwordHash: hash, role: u.role, emailVerified: true }
+      });
+      console.log(`Updated user: ${u.email}`);
+    }
+    // Upsert profile
+    if (u.profile && Object.keys(u.profile).length > 0) {
+      await prisma.userProfile.upsert({
+        where: { userId: user.id },
+        update: { ...u.profile, fullName: u.fullName },
+        create: { userId: user.id, ...u.profile, fullName: u.fullName }
+      });
+    }
   }
 
   const existingEvent1 = await prisma.event.findFirst({
