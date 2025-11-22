@@ -1,104 +1,97 @@
-# Deployment Guide
 
-## Render Deployment
+Deployment Guide
 
-### Step 1: Create PostgreSQL Database
+Render Deployment
 
-1. Go to [Render Dashboard](https://dashboard.render.com)
-2. Click "New +" → "PostgreSQL"
-3. Configure:
-   - Name: `highland-games-db`
-   - Database: `highland_games`
-   - User: Auto-generated
-   - Region: Choose closest to your users
-4. Copy the **Internal Database URL** (for use in step 2)
+Step 1: Create PostgreSQL Database
 
-### Step 2: Deploy Web Service
+Go to Render Dashboard (https://dashboard.render.com)
+Click New + → PostgreSQL
+Configure:
+Name: highland-games-db
+Database: highland_games
+User: Auto-generated
+Region: Choose closest to your users
+Copy the Internal Database URL (for use in step 2)
 
-1. In Render Dashboard, click "New +" → "Web Service"
-2. Connect your GitHub repository
-3. Configure:
-   - **Name:** `highland-games`
-   - **Environment:** `Node`
-   - **Build Command:** `npm install && npx prisma generate && npm run build`
-   - **Start Command:** `npm start`
-   - **Plan:** Free or Starter
+Step 2: Deploy Web Service
 
-### Step 3: Set Environment Variables
+In Render Dashboard, click New + → Web Service
+Connect your GitHub repository
+Configure:
+Name: highland-games
+Environment: Node
+Build Command: npm install && npx prisma generate && npm run build
+Start Command: npm start
+Plan: Free or Starter
 
-In the Render dashboard, add these environment variables:
+Step 3: Set Environment Variables
 
-- `NODE_ENV` = `production`
-- `DATABASE_URL` = `[Your PostgreSQL connection string from Step 1]`
-- `SESSION_SECRET` = `[Generate a random string, e.g., openssl rand -base64 32]`
-- `ADMIN_EMAIL` = `demo+admin@example.com`
-- `ADMIN_PASSWORD` = `DemoPassword123!`
+在 Render dashboard 添加这些环境变量：
+NODE_ENV = production
+DATABASE_URL = [Your PostgreSQL connection string from Step 1]
+SESSION_SECRET = [Generate a random string, e.g., openssl rand -base64 32]
+ADMIN_EMAIL = demo+admin@example.com
+ADMIN_PASSWORD = DemoPassword123!
 
-### Step 4: Run Database Migrations
+Step 4: Run Database Migrations
 
-After first deployment, run migrations:
+首次部署后，运行数据库迁移：
+Go to your web service in Render
+Open the Shell/Console
+Run: npx prisma migrate deploy
+Run: npm run seed (可选，填充演示数据)
 
-1. Go to your web service in Render
-2. Open the Shell/Console
-3. Run: `npx prisma migrate deploy`
-4. Run: `npm run seed` (optional, to populate demo data)
+Step 5: Update README
 
-### Step 5: Update README
+部署后，将 Live Demo URL 填写到 README.md 顶部。
 
-Once deployed, update the Live Demo URL in README.md:
+Railway Deployment
 
-```markdown
-**Live Demo:** https://your-app-name.onrender.com
-```
+Step 1: Create PostgreSQL Database
 
-## Railway Deployment
+Go to Railway Dashboard (https://railway.app)
+Click New Project
+Click New → Database → Add PostgreSQL
+Copy the connection string from the database service
 
-### Step 1: Create PostgreSQL Database
+Step 2: Deploy Application
 
-1. Go to [Railway Dashboard](https://railway.app)
-2. Click "New Project"
-3. Click "New" → "Database" → "Add PostgreSQL"
-4. Copy the connection string from the database service
+In Railway, click New → GitHub Repo
+Select your repository
+Railway 会自动检测 railway.json 配置
 
-### Step 2: Deploy Application
+Step 3: Set Environment Variables
 
-1. In Railway, click "New" → "GitHub Repo"
-2. Select your repository
-3. Railway will auto-detect the `railway.json` configuration
+在 Railway dashboard 添加这些变量：
+DATABASE_URL = [Your PostgreSQL connection string]
+SESSION_SECRET = [Generate a random string]
+NODE_ENV = production
+ADMIN_EMAIL = demo+admin@example.com
+ADMIN_PASSWORD = DemoPassword123!
 
-### Step 3: Set Environment Variables
+Step 4: Run Database Migrations
 
-In Railway dashboard, add these variables:
+Open Railway CLI 或使用 web terminal
+Run: npx prisma migrate deploy
+Run: npm run seed (可选)
 
-- `DATABASE_URL` = `[Your PostgreSQL connection string]`
-- `SESSION_SECRET` = `[Generate a random string]`
-- `NODE_ENV` = `production`
-- `ADMIN_EMAIL` = `demo+admin@example.com`
-- `ADMIN_PASSWORD` = `DemoPassword123!`
+Step 5: Generate Domain
 
-### Step 4: Run Database Migrations
+在 Railway 服务设置中点击 Generate Domain 获取公开 URL
+将 Railway URL 填写到 README
 
-1. Open Railway CLI or use the web terminal
-2. Run: `npx prisma migrate deploy`
-3. Run: `npm run seed` (optional)
+Post-Deployment Checklist
 
-### Step 5: Generate Domain
-
-1. In Railway, go to your service settings
-2. Click "Generate Domain" to get a public URL
-3. Update README with the Railway URL
-
-## Post-Deployment Checklist
-
-- [ ] Database migrations completed successfully
-- [ ] Environment variables set correctly
-- [ ] Application starts without errors
-- [ ] Can access homepage
-- [ ] Can register new user
-- [ ] Can login with demo accounts
-- [ ] Admin panel accessible
-- [ ] GDPR privacy page works
-- [ ] Update Live Demo URL in README
+数据库迁移完成
+环境变量设置正确
+应用可正常启动
+可访问首页
+可注册新用户
+可用演示账号登录
+可访问管理后台
+GDPR 隐私页可用
+README 已更新 Live Demo URL
 
 ## Troubleshooting
 
