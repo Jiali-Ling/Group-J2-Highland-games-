@@ -93,10 +93,11 @@ Edit `app/config/site-content.js`
 ## Documentation
 
 See [docs/](./docs/) for detailed documentation including:
-- [Process Flow Diagram](./docs/flow.mmd)
-- [Architecture Diagram](./docs/architecture.mmd)
-- [Database ER Diagram](./docs/er.mmd)
-- [Technology Comparison](./docs/tech-comparison.md)
+- [Deployment Guide](./docs/deployment.md) - How to deploy to Render/Railway
+- [Process Flow Diagram](./docs/flow.mmd) - Registration to GDPR workflow
+- [Architecture Diagram](./docs/architecture.mmd) - System architecture
+- [Database ER Diagram](./docs/er.mmd) - Entity relationships
+- [Technology Comparison](./docs/tech-comparison.md) - Remix vs React+Express, SQLite vs PostgreSQL
 
 ## Hosting & Scaling
 
