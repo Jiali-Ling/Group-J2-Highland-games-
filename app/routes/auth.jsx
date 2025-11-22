@@ -261,7 +261,7 @@ export default function Auth() {
                 </button>
               </p>
               <p className="form-hint" style={{ color: '#000000', fontWeight: '500', fontSize: '0.75rem', marginTop: '1.5rem', letterSpacing: '0.3px', lineHeight: '1.5' }}>
-                💡 Test account: <strong>B01812585@student.uws.ac.uk</strong> / <strong>password123</strong>
+                💡 Test account: <strong>b01812585@student.uws.ac.uk</strong> / <strong>password123</strong>
               </p>
             </div>
           </Form>
