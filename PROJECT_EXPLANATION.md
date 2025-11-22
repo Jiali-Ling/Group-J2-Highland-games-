@@ -632,11 +632,6 @@ Hosting service options:
   DigitalOcean (supports Docker)
   AWS/GCP (enterprise level)
 
-Cost calculation:
-  Vercel free tier: suitable for small projects
-  Railway: $5/month starting
-  DigitalOcean Droplet: $6/month starting
-
 Scalability strategy:
   Use PostgreSQL instead of SQLite (production)
   Add Redis cache (optional)
