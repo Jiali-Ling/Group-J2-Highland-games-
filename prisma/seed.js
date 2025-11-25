@@ -51,7 +51,6 @@ async function main() {
   const jiali2 = await upsertUser({ email: "jiali.ling@example.com",  password: "password123", role: "participant", fullName: "Jiali Ling" });
   const yuhan = await upsertUser({ email: "yuhan.shi@example.com",   password: "password123", role: "participant", fullName: "Yuhan Shi" });
 
-  // Upsert three teams (two for Yuhan Shi)
   await prisma.team.upsert({
     where: { inviteCode: "JIALITEAM1" },
     update: { name: "Jiali's Caber Tossers", description: "Team led by Jiali Ling", ownerId: jiali.id },

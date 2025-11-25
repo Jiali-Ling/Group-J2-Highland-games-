@@ -1,9 +1,14 @@
+## Live Demo
+URL: https://group-j2-highland-games.onrender.com
+Admin: admin@example.com / admin123
+Student: B01812585@student.uws.ac.uk / password123
+Demo path: Home → Events → Apply → Admin → Approve → Dashboard → Privacy (Export/Delete)
 
 Highland Games Event Management
 
 Live Demo: https://group-j2-highland-games.onrender.com
 
-A web application for managing Highland Games events with user registration, team management, event signups, and admin approval.
+A web application for managing Highland Games events with user registration, team management, event sign-up, and admin approval.
 
 Features
 
