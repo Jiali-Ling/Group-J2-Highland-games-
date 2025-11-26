@@ -265,6 +265,19 @@ Student Declaration
 
 This project is submitted for educational assessment purposes. All code, documentation, and diagrams are original work created for this assignment. Test accounts and sample data are for demonstration only and do not represent real users or events.
 
+## Images from screenshots
+
+- docs/Images/01.User Login.png
+- docs/Images/02.Events.png
+- docs/Images/03.Register.png
+- docs/Images/04.Register 2.png
+- docs/Images/05.Register successfully.png
+- docs/Images/06.Admin Login.png
+- docs/Images/07.admin-approve.png
+- docs/Images/08.admin-reject.png
+- docs/Images/09.dashboard-status.png
+- docs/Images/10.privacy-export.png
+
 License
 
 MIT
