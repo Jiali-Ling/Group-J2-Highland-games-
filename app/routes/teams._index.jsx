@@ -35,6 +35,7 @@ export async function loader({ request }) {
   const ownedTeams = await prisma.team.findMany({
     where: { ownerId: user.id },
     include: {
+      owner: { select: { email: true } },
       members: {
         include: {
           user: { select: { id: true, email: true } }
@@ -43,7 +44,27 @@ export async function loader({ request }) {
     }
   });
 
-  return json({ userTeams, ownedTeams, user });
+  // Merge and deduplicate teams: combine ownedTeams and userTeams, removing duplicates
+  const allTeamIds = new Set();
+  const allTeams = [];
+  
+  // Add owned teams first
+  ownedTeams.forEach(team => {
+    if (!allTeamIds.has(team.id)) {
+      allTeamIds.add(team.id);
+      allTeams.push({ team, isOwner: true });
+    }
+  });
+  
+  // Add user teams that aren't already included
+  userTeams.forEach(({ team }) => {
+    if (!allTeamIds.has(team.id)) {
+      allTeamIds.add(team.id);
+      allTeams.push({ team, isOwner: team.ownerId === user.id });
+    }
+  });
+
+  return json({ userTeams, ownedTeams, allTeams, user });
 }
 
 export async function action({ request }) {
@@ -194,7 +215,7 @@ export async function action({ request }) {
 }
 
 export default function Teams() {
-  const { userTeams, ownedTeams, user } = useLoaderData();
+  const { userTeams, ownedTeams, allTeams, user } = useLoaderData();
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -421,12 +442,12 @@ export default function Teams() {
       )}
 
       <section style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>Your Teams</h2>
-        {userTeams.length === 0 ? (
+        <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>Your Teams ({allTeams?.length || userTeams.length})</h2>
+        {(!allTeams || allTeams.length === 0) && userTeams.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>You haven't joined any teams yet.</p>
         ) : (
           <div style={{ display: "grid", gap: "1rem" }}>
-            {userTeams.map(({ team }) => (
+            {(allTeams || userTeams.map(({ team }) => ({ team, isOwner: team.ownerId === user.id }))).map(({ team, isOwner }) => (
               <div key={team.id} style={{
                 background: "var(--card-bg)",
                 border: "1px solid var(--card-border)",
@@ -453,7 +474,7 @@ export default function Teams() {
                       }}>{team.inviteCode}</code>
                     </p>
                   </div>
-                  {team.ownerId !== user.id && (
+                  {!isOwner && (
                     <Form method="post">
                       <input type="hidden" name="intent" value="leave" />
                       <input type="hidden" name="teamId" value={team.id} />
@@ -472,6 +493,18 @@ export default function Teams() {
                         Leave Team
                       </button>
                     </Form>
+                  )}
+                  {isOwner && (
+                    <span style={{
+                      padding: "0.25rem 0.5rem",
+                      background: "var(--brand)",
+                      color: "white",
+                      borderRadius: "4px",
+                      fontSize: "0.85rem",
+                      fontWeight: "600"
+                    }}>
+                      Owner
+                    </span>
                   )}
                 </div>
               </div>

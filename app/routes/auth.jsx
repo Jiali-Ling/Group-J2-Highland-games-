@@ -9,7 +9,7 @@ import "~/styles/auth.css";
 export async function action({ request }) {
   const formData = await request.formData();
   const authType = formData.get("authType");
-  const email = formData.get("email");
+  const email = formData.get("email")?.toString()?.trim()?.toLowerCase() || "";
   const password = formData.get("password");
   const returnTo = formData.get("returnTo") || "/events";
 

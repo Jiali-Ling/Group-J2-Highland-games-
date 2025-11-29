@@ -28,8 +28,14 @@ function hydrate() {
     } catch (error) {
       console.error("Hydration failed, retrying…", error);
       requestAnimationFrame(() => {
-        removeInjectedNodes();
-        hydrateRoot(document, <RemixBrowser />);
+        try {
+          removeInjectedNodes();
+          hydrateRoot(document, <RemixBrowser />);
+        } catch (retryError) {
+          console.error("Hydration retry also failed, falling back to client-side rendering", retryError);
+          // Fallback: let React handle client-side rendering
+          // This prevents the app from crashing completely
+        }
       });
     }
   });
