@@ -37,14 +37,14 @@ async function main() {
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
   await upsertUser({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD, role: "admin", fullName: "Admin" });
   const jiali = await upsertUser({
-    email: "b01812585@student.uws.ac.uk",
+    email: "B01812585@student.uws.ac.uk",
     password: "password123",
     role: "participant",
     fullName: "Jiali Ling",
     profile: {
       dateOfBirth: new Date("2004-09-11"),
       phone: "+44 7522 291350",
-      address: "Edinburgh, Scotland",
+      address: "The University of the West of Scotland, Paisley, Scotland",
       emergencyContact: "Family Contact - +44 7522 000000",
     },
   });
@@ -61,11 +61,7 @@ async function main() {
     update: { name: "Yuhan's Stone Putters", description: "Team led by Yuhan Shi", ownerId: yuhan.id },
     create: { name: "Yuhan's Stone Putters", description: "Team led by Yuhan Shi", inviteCode: "YUHANTEAM1", ownerId: yuhan.id },
   });
-  await prisma.team.upsert({
-    where: { inviteCode: "YUHANTEAM2" },
-    update: { name: "Yuhan's Hammer Throwers", description: "Second team led by Yuhan Shi", ownerId: yuhan.id },
-    create: { name: "Yuhan's Hammer Throwers", description: "Second team led by Yuhan Shi", inviteCode: "YUHANTEAM2", ownerId: yuhan.id },
-  });
+
   const event1 = await upsertEvent("Paisley Highland Games 2025", {
     description: "Traditional Highland athletics featuring caber toss, stone put, hammer throw, and Highland dancing.",
     date: new Date("2025-12-15T10:00:00Z"),
