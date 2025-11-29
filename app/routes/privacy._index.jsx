@@ -196,7 +196,7 @@ export default function Privacy() {
             <input type="hidden" name="intent" value="correctData" />
             <div style={{ marginBottom: "1rem" }}>
               <label htmlFor="reason" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
-                What needs to be corrected? *
+                What needs to be corrected?
               </label>
               <textarea
                 id="reason"
@@ -263,7 +263,7 @@ export default function Privacy() {
             <input type="hidden" name="intent" value="deleteAccount" />
             <div style={{ marginBottom: "1rem" }}>
               <label htmlFor="confirmation" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600" }}>
-                Type "DELETE" to confirm *
+                Type "DELETE" to confirm
               </label>
               <input
                 type="text"

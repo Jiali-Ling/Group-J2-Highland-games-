@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData, useActionData, useNavigation } from "@remix-run/react";
+import { Form, useLoaderData, useActionData, useNavigation, useSearchParams } from "@remix-run/react";
 import { requireUser, getUser } from "~/utils/session.server";
 import { prisma } from "~/utils/db.server";
 import profileStyles from "~/styles/profile.css";
@@ -70,7 +70,7 @@ export async function action({ request }) {
         });
       }
 
-      return json({ success: true, message: "Profile updated successfully" });
+      return redirect("/profile?updated=1");
     }
 
     return json({ error: "Invalid action" }, { status: 400 });
@@ -84,7 +84,9 @@ export default function Profile() {
   const { user } = useLoaderData();
   const actionData = useActionData();
   const navigation = useNavigation();
+  const [searchParams] = useSearchParams();
   const isSubmitting = navigation.state === "submitting";
+  const isUpdated = searchParams.get("updated") === "1";
 
   return (
     <main className="container" style={{ paddingTop: "2rem", paddingBottom: "4rem", maxWidth: "800px" }}>
@@ -108,7 +110,7 @@ export default function Profile() {
         </div>
       )}
 
-      {actionData?.success && (
+      {(actionData?.success || isUpdated) && (
         <div style={{
           background: "var(--success-bg)",
           border: "1px solid var(--success-border)",
@@ -117,7 +119,7 @@ export default function Profile() {
           marginBottom: "1.5rem",
           color: "var(--success-text)"
         }}>
-          ✓ {actionData.message}
+          ✓ {actionData?.message || "Profile updated successfully"}
         </div>
       )}
 
@@ -154,7 +156,7 @@ export default function Profile() {
           
           <div style={{ marginBottom: "1rem" }}>
             <label htmlFor="fullName" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
-              Full Name *
+              Full Name
             </label>
             <input
               type="text"

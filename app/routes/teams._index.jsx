@@ -1,6 +1,7 @@
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData, useActionData, Link, useNavigation } from "@remix-run/react";
+import { Form, useLoaderData, useActionData, Link, useNavigation, useSearchParams } from "@remix-run/react";
 import { requireUser, getUser } from "~/utils/session.server";
+import { storage } from "~/utils/session.server";
 import { prisma } from "~/utils/db.server";
 import { useState } from "react";
 import { siteContent } from "~/config/site-content";
@@ -14,6 +15,49 @@ export async function loader({ request }) {
   const user = await getUser(request);
   if (!user) {
     return redirect("/auth?returnTo=/teams");
+  }
+
+  const session = await storage.getSession(request.headers.get("Cookie"));
+  const isAdmin = session.get("admin") === true;
+
+  if (isAdmin) {
+    const allTeams = await prisma.team.findMany({
+      include: {
+        owner: { 
+          select: { 
+            id: true, 
+            email: true 
+          } 
+        },
+        members: {
+          include: {
+            user: { 
+              select: { 
+                id: true, 
+                email: true 
+              } 
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: "desc" }
+    });
+
+    const allTeamsWithOwnership = allTeams.map(team => ({
+      team,
+      isOwner: team.ownerId === user.id
+    }));
+
+    console.log(`[Teams Loader] Admin view - All teams: ${allTeams.length}`);
+    console.log(`[Teams Loader] Teams by owner:`, allTeams.map(t => ({ id: t.id, name: t.name, ownerEmail: t.owner?.email })));
+
+    return json({ 
+      userTeams: [], 
+      ownedTeams: allTeams.filter(t => t.ownerId === user.id), 
+      allTeams: allTeamsWithOwnership, 
+      user,
+      isAdmin: true
+    });
   }
 
   const userTeams = await prisma.teamMember.findMany({
@@ -44,11 +88,9 @@ export async function loader({ request }) {
     }
   });
 
-  // Merge and deduplicate teams: combine ownedTeams and userTeams, removing duplicates
   const allTeamIds = new Set();
   const allTeams = [];
   
-  // Add owned teams first
   ownedTeams.forEach(team => {
     if (!allTeamIds.has(team.id)) {
       allTeamIds.add(team.id);
@@ -56,7 +98,6 @@ export async function loader({ request }) {
     }
   });
   
-  // Add user teams that aren't already included
   userTeams.forEach(({ team }) => {
     if (!allTeamIds.has(team.id)) {
       allTeamIds.add(team.id);
@@ -64,7 +105,9 @@ export async function loader({ request }) {
     }
   });
 
-  return json({ userTeams, ownedTeams, allTeams, user });
+  console.log(`[Teams Loader] User ID: ${user.id}, Owned: ${ownedTeams.length}, UserTeams: ${userTeams.length}, AllTeams: ${allTeams.length}`);
+
+  return json({ userTeams, ownedTeams, allTeams, user, isAdmin: false });
 }
 
 export async function action({ request }) {
@@ -81,7 +124,34 @@ export async function action({ request }) {
         return json({ error: "Team name must be at least 2 characters" }, { status: 400 });
       }
 
-      const inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+      const existingTeam = await prisma.team.findFirst({
+        where: {
+          name: name,
+          ownerId: userId
+        }
+      });
+
+      if (existingTeam) {
+        return json({ error: `You already have a team named "${name}". Please choose a different name.` }, { status: 400 });
+      }
+
+      let inviteCode;
+      let isUnique = false;
+      let attempts = 0;
+      while (!isUnique && attempts < 10) {
+        inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+        const existing = await prisma.team.findUnique({
+          where: { inviteCode }
+        });
+        if (!existing) {
+          isUnique = true;
+        }
+        attempts++;
+      }
+
+      if (!isUnique) {
+        return json({ error: "Failed to generate unique invite code. Please try again." }, { status: 500 });
+      }
 
       const team = await prisma.team.create({
         data: {
@@ -100,7 +170,9 @@ export async function action({ request }) {
         }
       });
 
-      return json({ success: true, team });
+      console.log(`[Teams Action] Team created: ${team.name} (ID: ${team.id}, Invite: ${team.inviteCode}) by user ${userId}`);
+
+      return redirect("/teams?created=1");
     }
 
     if (intent === "join") {
@@ -139,11 +211,32 @@ export async function action({ request }) {
         }
       });
 
-      return json({ success: true, message: "Successfully joined team!" });
+      return redirect("/teams?joined=1");
     }
 
     if (intent === "leave") {
       const teamId = parseInt(formData.get("teamId"));
+
+      const teamMember = await prisma.teamMember.findUnique({
+        where: {
+          teamId_userId: {
+            teamId,
+            userId
+          }
+        }
+      });
+
+      if (!teamMember) {
+        return json({ error: "You are not a member of this team" }, { status: 404 });
+      }
+
+      const team = await prisma.team.findUnique({
+        where: { id: teamId }
+      });
+
+      if (team && team.ownerId === userId) {
+        return json({ error: "Team owners cannot leave their own team. Please delete the team instead." }, { status: 400 });
+      }
 
       await prisma.teamMember.delete({
         where: {
@@ -154,7 +247,7 @@ export async function action({ request }) {
         }
       });
 
-      return json({ success: true, message: "Left team successfully" });
+      return redirect("/teams?left=1");
     }
 
     if (intent === "update") {
@@ -188,11 +281,18 @@ export async function action({ request }) {
     if (intent === "delete") {
       const teamId = parseInt(formData.get("teamId"));
 
+      const session = await storage.getSession(request.headers.get("Cookie"));
+      const isAdmin = session.get("admin") === true;
+
       const team = await prisma.team.findUnique({
         where: { id: teamId }
       });
 
-      if (!team || team.ownerId !== userId) {
+      if (!team) {
+        return json({ error: "Team not found" }, { status: 404 });
+      }
+
+      if (!isAdmin && team.ownerId !== userId) {
         return json({ error: "You don't have permission to delete this team" }, { status: 403 });
       }
 
@@ -204,7 +304,7 @@ export async function action({ request }) {
         where: { id: teamId }
       });
 
-      return json({ success: true, message: "Team deleted successfully" });
+      return redirect("/teams?deleted=1");
     }
 
     return json({ error: "Invalid action" }, { status: 400 });
@@ -215,14 +315,19 @@ export async function action({ request }) {
 }
 
 export default function Teams() {
-  const { userTeams, ownedTeams, allTeams, user } = useLoaderData();
+  const { userTeams, ownedTeams, allTeams, user, isAdmin } = useLoaderData();
   const actionData = useActionData();
   const navigation = useNavigation();
+  const [searchParams] = useSearchParams();
   const isSubmitting = navigation.state === "submitting";
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showJoinForm, setShowJoinForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState(null);
   const content = siteContent.teams;
+  const isCreated = searchParams.get("created") === "1";
+  const isJoined = searchParams.get("joined") === "1";
+  const isDeleted = searchParams.get("deleted") === "1";
+  const isLeft = searchParams.get("left") === "1";
 
   return (
     <main className="container" style={{ paddingTop: "2rem", paddingBottom: "4rem" }}>
@@ -246,7 +351,7 @@ export default function Teams() {
         </div>
       )}
 
-      {actionData?.success && actionData?.message && (
+      {(actionData?.success && actionData?.message) || isCreated || isJoined || isDeleted || isLeft ? (
         <div style={{
           background: "var(--success-bg)",
           border: "1px solid var(--success-border)",
@@ -255,9 +360,9 @@ export default function Teams() {
           marginBottom: "1.5rem",
           color: "var(--success-text)"
         }}>
-          ✓ {actionData.message}
+          ✓ {actionData?.message || (isCreated ? "Team created successfully!" : isJoined ? "Successfully joined team!" : isDeleted ? "Team deleted successfully!" : isLeft ? "Left team successfully!" : "")}
         </div>
-      )}
+      ) : null}
 
       <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
         <button
@@ -309,7 +414,7 @@ export default function Teams() {
             <input type="hidden" name="intent" value="create" />
             <div style={{ marginBottom: "1rem" }}>
               <label htmlFor="name" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
-                Team Name *
+                Team Name
               </label>
               <input
                 type="text"
@@ -376,7 +481,7 @@ export default function Teams() {
             <input type="hidden" name="intent" value="join" />
             <div style={{ marginBottom: "1.5rem" }}>
               <label htmlFor="inviteCode" style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
-                Team Invite Code *
+                Team Invite Code
               </label>
               <input
                 type="text"
@@ -414,35 +519,15 @@ export default function Teams() {
         </div>
       )}
 
-      {actionData?.success && actionData?.team && (
-        <div style={{
-          background: "var(--success-bg)",
-          border: "1px solid var(--success-border)",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          marginBottom: "2rem"
-        }}>
-          <h3 style={{ color: "var(--success-text)", marginBottom: "1rem" }}>✓ Team Created Successfully!</h3>
-          <p style={{ marginBottom: "0.5rem" }}>
-            <strong>Team Name:</strong> {actionData.team.name}
-          </p>
-          <p style={{ marginBottom: "1rem" }}>
-            <strong>Invite Code:</strong> <code style={{
-              background: "white",
-              padding: "0.25rem 0.5rem",
-              borderRadius: "4px",
-              fontSize: "1.2rem",
-              fontWeight: "bold"
-            }}>{actionData.team.inviteCode}</code>
-          </p>
-          <p style={{ fontSize: "0.9rem", color: "#666" }}>
-            Share this code with teammates to invite them!
-          </p>
-        </div>
-      )}
-
       <section style={{ marginBottom: "3rem" }}>
-        <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>Your Teams ({allTeams?.length || userTeams.length})</h2>
+        <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
+          {isAdmin ? "All Teams" : "Your Teams"} ({allTeams?.length || userTeams.length})
+        </h2>
+        {isAdmin && (
+          <p style={{ fontSize: "0.9rem", color: "#666", marginBottom: "1rem", fontStyle: "italic" }}>
+            Admin view: Showing all teams in the system
+          </p>
+        )}
         {(!allTeams || allTeams.length === 0) && userTeams.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>You haven't joined any teams yet.</p>
         ) : (
@@ -474,38 +559,68 @@ export default function Teams() {
                       }}>{team.inviteCode}</code>
                     </p>
                   </div>
-                  {!isOwner && (
-                    <Form method="post">
-                      <input type="hidden" name="intent" value="leave" />
-                      <input type="hidden" name="teamId" value={team.id} />
-                      <button
-                        type="submit"
-                        style={{
-                          padding: "0.5rem 1rem",
-                          background: "var(--danger-bg)",
-                          color: "var(--danger-text)",
-                          border: "none",
-                          borderRadius: "6px",
-                          cursor: "pointer",
-                          fontSize: "0.9rem"
-                        }}
-                      >
-                        Leave Team
-                      </button>
-                    </Form>
-                  )}
-                  {isOwner && (
-                    <span style={{
-                      padding: "0.25rem 0.5rem",
-                      background: "var(--brand)",
-                      color: "white",
-                      borderRadius: "4px",
-                      fontSize: "0.85rem",
-                      fontWeight: "600"
-                    }}>
-                      Owner
-                    </span>
-                  )}
+                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    {isAdmin ? (
+                      <Form method="post">
+                        <input type="hidden" name="intent" value="delete" />
+                        <input type="hidden" name="teamId" value={team.id} />
+                        <button
+                          type="submit"
+                          style={{
+                            padding: "0.5rem 1rem",
+                            background: "var(--danger-bg)",
+                            color: "var(--danger-text)",
+                            border: "none",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "0.9rem"
+                          }}
+                          onClick={(e) => {
+                            if (!confirm(`Are you sure you want to delete team "${team.name}"? This action cannot be undone.`)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          Delete Team
+                        </button>
+                      </Form>
+                    ) : (
+                      <>
+                        {!isOwner && (
+                          <Form method="post">
+                            <input type="hidden" name="intent" value="leave" />
+                            <input type="hidden" name="teamId" value={team.id} />
+                            <button
+                              type="submit"
+                              style={{
+                                padding: "0.5rem 1rem",
+                                background: "var(--danger-bg)",
+                                color: "var(--danger-text)",
+                                border: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                fontSize: "0.9rem"
+                              }}
+                            >
+                              Leave Team
+                            </button>
+                          </Form>
+                        )}
+                        {isOwner && (
+                          <span style={{
+                            padding: "0.25rem 0.5rem",
+                            background: "var(--brand)",
+                            color: "white",
+                            borderRadius: "4px",
+                            fontSize: "0.85rem",
+                            fontWeight: "600"
+                          }}>
+                            Owner
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -513,6 +628,7 @@ export default function Teams() {
         )}
       </section>
 
+      {!isAdmin && (
       <section>
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>Teams You Own</h2>
         {ownedTeams.length === 0 ? (
@@ -532,7 +648,7 @@ export default function Teams() {
                     <input type="hidden" name="teamId" value={team.id} />
                     <div style={{ marginBottom: "1rem" }}>
                       <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "var(--label-text)" }}>
-                        Team Name *
+                        Team Name
                       </label>
                       <input
                         type="text"
@@ -673,6 +789,7 @@ export default function Teams() {
           </div>
         )}
       </section>
+      )}
     </main>
   );
 }

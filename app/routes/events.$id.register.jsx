@@ -242,7 +242,7 @@ export default function Register() {
         className="register-form"
       >
         <div className="form-field">
-          <label htmlFor="name">Full Name *</label>
+          <label htmlFor="name">Full Name</label>
           <input 
             id="name"
             name="name" 
@@ -259,7 +259,7 @@ export default function Register() {
         </div>
 
         <div className="form-field">
-          <label htmlFor="category">Competition Event *</label>
+          <label htmlFor="category">Competition Event</label>
           <select 
             id="category"
             name="category" 
@@ -366,7 +366,7 @@ export default function Register() {
               disabled={isSubmitting}
             />
             <label htmlFor="agree">
-              I confirm that all information provided is accurate and complete. *
+              I confirm that all information provided is accurate and complete.
             </label>
             {actionData?.errors?.agree && (
               <div className="error-message">{actionData.errors.agree}</div>

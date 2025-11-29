@@ -10,7 +10,7 @@ export const siteContent = {
     
     createForm: {
       title: "Create New Team",
-      nameLabel: "Team Name *",
+      nameLabel: "Team Name",
       descriptionLabel: "Description",
       submitButton: "Create Team",
       submittingButton: "Creating..."
@@ -18,7 +18,7 @@ export const siteContent = {
     
     joinForm: {
       title: "Join Team",
-      codeLabel: "Team Invite Code *",
+      codeLabel: "Team Invite Code",
       codePlaceholder: "Enter 8-character code",
       submitButton: "Join Team",
       submittingButton: "Joining..."
@@ -63,7 +63,7 @@ export const siteContent = {
     
     personalInfo: {
       title: "Personal Information",
-      fullNameLabel: "Full Name *",
+      fullNameLabel: "Full Name",
       dateOfBirthLabel: "Date of Birth",
       phoneLabel: "Phone Number",
       addressLabel: "Address",

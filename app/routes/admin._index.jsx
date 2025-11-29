@@ -35,7 +35,19 @@ export async function loader({ request }) {
     orderBy: { createdAt: "desc" }
   });
   
-  return json({ isAdmin: true, regs, events, pendingCount, dataRequests, userEmail });
+  const allTeams = await prisma.team.findMany({
+    include: {
+      owner: { select: { id: true, email: true } },
+      members: {
+        include: {
+          user: { select: { id: true, email: true } }
+        }
+      }
+    },
+    orderBy: { createdAt: "desc" }
+  });
+  
+  return json({ isAdmin: true, regs, events, pendingCount, dataRequests, userEmail, allTeams });
 }
 
 export async function action({ request }) {
@@ -273,6 +285,49 @@ export default function Admin() {
                   {r.reviewedBy && (
                     <span style={{ fontSize: "0.85rem", color: "#666" }}>by {r.reviewedBy}</span>
                   )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="dashboard-section" style={{ marginTop: "2rem" }}>
+        <h3>All Teams ({data.allTeams?.length || 0})</h3>
+        {!data.allTeams || data.allTeams.length === 0 ? (
+          <p className="empty-state">No teams created yet.</p>
+        ) : (
+          <div className="registrations-list">
+            {data.allTeams.map(team => (
+              <div key={team.id} className="registration-item" style={{ background: "#f8f9fa", border: "1px solid #dee2e6" }}>
+                <div className="reg-info">
+                  <span className="reg-id">#{team.id}</span>
+                  <div>
+                    <strong>{team.name}</strong>
+                    {team.description && (
+                      <div style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>
+                        {team.description}
+                      </div>
+                    )}
+                    <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.25rem" }}>
+                      Owner: {team.owner.email}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>
+                      Members: {team.members.length} | Invite Code: <code style={{ background: "#e9ecef", padding: "0.1rem 0.3rem", borderRadius: "3px" }}>{team.inviteCode}</code>
+                    </div>
+                    {team.members.length > 0 && (
+                      <div style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.5rem" }}>
+                        <strong>Members:</strong> {team.members.map((m, idx) => (
+                          <span key={m.id}>
+                            {m.user.email} ({m.role}){idx < team.members.length - 1 ? ", " : ""}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <span style={{ fontSize: "0.85rem", color: "#666" }}>
+                    Created: {new Date(team.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </span>
                 </div>
               </div>
             ))}
